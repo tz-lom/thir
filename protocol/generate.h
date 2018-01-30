@@ -1,26 +1,19 @@
-#include <stdint.h>
-#include <numeric>
-#include <vector>
-#include <string>
-#include <cstring>
-#include <cassert>
-#include <algorithm>
 #include <boost/preprocessor/comparison/greater.hpp>
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/list.hpp>
 
-#define FIELD(name, type) ((Field)(name)(type))
-#define VECTOR(name, type) ((Vector)(name)(type))
-#define ANY(name) ((Any)(name)(First))
-#define EMPTY()    ((Void)(__void)(First))
+#define FIELD(name, type) ((Plain<type>)(name))
+#define VECTOR(name, type) ((Vector<type>)(name))
+#define ANY(name) ((Any)(name))
+#define EMPTY()    ((Void)(__void))
 #define STRING(name) VECTOR(name, char)
-#define VECTOR_ANY(name) ((AnyVector)(name)(First))
+#define VECTOR_ANY(name) ((VectorOfAny)(name))
 //#define STRING(name) ((String)(name)(First))
 #define RECORD(name, Fields) ((name)()(Fields))
 
 
 #define DECLARE_FIELD(r, data, descr) \
-    struct BOOST_PP_SEQ_ELEM(1, descr): BOOST_PP_SEQ_ELEM(0, descr) < BOOST_PP_SEQ_ELEM(2,descr), BOOST_PP_SEQ_ELEM(3,descr) > {};
+    struct BOOST_PP_SEQ_ELEM(1, descr): Field<BOOST_PP_SEQ_ELEM(0, descr), BOOST_PP_SEQ_ELEM(2,descr) > {};
 
 #define GENERATE_PARENT(s, state, x) \
     BOOST_PP_SEQ_PUSH_FRONT(state, \
@@ -39,17 +32,8 @@
 #define GENERATE_HEADER_SIZE(r, data, x) \
     + BOOST_PP_SEQ_ELEM(1,x)::headerSize
 
-#define GENERATE_STATIC_SIZE_Field(name) \
-    + sizeof(name::T)
-
-#define GENERATE_STATIC_SIZE_Vector(name)
-#define GENERATE_STATIC_SIZE_Any(name)
-#define GENERATE_STATIC_SIZE_Void(name)
-#define GENERATE_STATIC_SIZE_String(name)
-#define GENERATE_STATIC_SIZE_AnyVector(name)
-
 #define GENERATE_STATIC_SIZE(r, data, x) \
-    BOOST_PP_CAT(GENERATE_STATIC_SIZE_, BOOST_PP_SEQ_ELEM(0,x))(BOOST_PP_SEQ_ELEM(1,x))
+    + BOOST_PP_SEQ_ELEM(1,x)::staticSize
 
 
 
@@ -166,26 +150,17 @@ struct Name: Record<Id, Name> { \
     BOOST_PP_SEQ_FOR_EACH(DECLARE_FIELD,_,GENERATE_STRUCTS(Fields))\
     \
     enum {\
-        headerSize = 0 BOOST_PP_SEQ_FOR_EACH(GENERATE_HEADER_SIZE,_,Fields),\
-        staticSize = 0 BOOST_PP_SEQ_FOR_EACH(GENERATE_STATIC_SIZE,_,Fields)\
+        headerSize = 0 BOOST_PP_SEQ_FOR_EACH(GENERATE_HEADER_SIZE,_,Fields), \
+        staticSize = 0 BOOST_PP_SEQ_FOR_EACH(GENERATE_STATIC_SIZE,_,Fields) \
     };\
     \
-    template<typename Continue>\
-    struct constructor {\
-        typedef \
-        BOOST_PP_SEQ_FOR_EACH(GENERATE_VALUE_SETTER_CHAIN,Name, Fields)\
-        Continue\
-        BOOST_PP_SEQ_FOR_EACH(GENERATE_VALUE_SETTER_CHAIN_VALCON,_, Fields)\
-        type;\
-    };\
     typedef \
     BOOST_PP_SEQ_FOR_EACH(GENERATE_VALUE_SETTER_CHAIN,Name, Fields)\
-    ValueSetter<__LastRecursive, __LastRecursive>\
+    ValueSetter<__Last, __Last> \
     BOOST_PP_SEQ_FOR_EACH(GENERATE_VALUE_SETTER_CHAIN_VALCON,_, Fields)\
     recursive;\
     \
-    static GENERATE_VALUE_SETTER_CONSTRUCTOR(Name, Fields) create();\
-    static recursive createRecursive();\
+    static recursive create();\
 };\
 
 
@@ -205,26 +180,15 @@ struct Name: Record<Id, Name> { \
     BOOST_PP_CAT(GENERATE_CONSTRUCTOR_VECTOR_SIZE_, BOOST_PP_SEQ_ELEM(0,x))(BOOST_PP_SEQ_ELEM(1,x))
 
 #define GENERATE_CONSTRUCTOR(Name, Fields)\
-GENERATE_VALUE_SETTER_CONSTRUCTOR(Name, Fields) Name::create()\
+Name::recursive Name::create()\
 {\
-    SerializedData *sd = new SerializedData(sizeof(SerializedData::rid)+Name::headerSize*sizeof(SerializedData::hel)+Name::staticSize);\
-    *reinterpret_cast<SerializedData::rid*>(sd->data()) = byte_order_to_le((SerializedData::rid)Name::ID);\
-    SerializedData::hel *dyn = reinterpret_cast<SerializedData::hel*>(sd->data()+sizeof(SerializedData::rid));\
-    for(size_t j=Name::headerSize; j>0; --j, ++dyn) *dyn = 0;\
-\
-    return \
-    GENERATE_VALUE_SETTER_CONSTRUCTOR(Name, Fields)\
-    (new RecordConstructor(sd, Name::staticSize, Name::headerSize));\
-}\
-\
-Name::recursive Name::createRecursive()\
-{\
-    SerializedData *sd = new SerializedData(sizeof(SerializedData::rid)+Name::headerSize*sizeof(SerializedData::hel)+Name::staticSize);\
-    *reinterpret_cast<SerializedData::rid*>(sd->data()) = byte_order_to_le((SerializedData::rid)Name::ID);\
-    SerializedData::hel *dyn = reinterpret_cast<SerializedData::hel*>(sd->data()+sizeof(SerializedData::rid));\
-    for(size_t j=Name::headerSize; j>0; --j, ++dyn) *dyn = 0;\
-\
-    return Name::recursive(new RecordConstructor(sd, Name::staticSize, Name::headerSize));\
+    SerializedData* sd = new SerializedData(sizeof(SerializedData::rid) + \
+                                            headerSize * \
+                                            sizeof(SerializedData::hel) + \
+                                            staticSize); \
+    RecordConstructor *rc = new RecordConstructor(sd); \
+    rc->beginNested(ID, staticSize, headerSize); \
+    return recursive(rc); \
 }\
 
 #define GENERATE_CONSTRUCTORS(r, data, i , Record) \
@@ -268,11 +232,11 @@ Name::recursive Name::createRecursive()\
 #define GENERATE_PREFIX_I(Records) \
     BOOST_PP_SEQ_FOR_EACH_I(GENERATE_RECORD_CALL,_,Records) \
 
-#define GENERATE_PREFIX(Records) \
+#define GENERATE_HEADER(Records) \
     GENERATE_PREFIX_I(INJECT_RECORD_IDS(Records))
 
 #define GENERATE_CLASS_H(Records) GENERATE_CLASS_H_I(INJECT_RECORD_IDS(Records))
-#define GENERATE_CLASS_CPP(Records) GENERATE_CLASS_CPP_I(INJECT_RECORD_IDS(Records))
+#define GENERATE_IMPLEMENTATION(Records) GENERATE_CLASS_CPP_I(INJECT_RECORD_IDS(Records))
 
 #define GENERATE_CLASS_FRIEND(r, data, i, record) \
     friend struct BOOST_PP_SEQ_ELEM(0,record);\
@@ -300,10 +264,14 @@ Name::recursive Name::createRecursive()\
 #define GENERATE_STATIC_STATIC_SIZE(r, data, i, record)\
     BOOST_PP_COMMA() BOOST_PP_SEQ_ELEM(0, record)::staticSize
 
+#define GENERATE_STATIC_LAST_ID(s, state, x) \
+    BOOST_PP_SEQ_ELEM(0, x)
+
 #define GENERATE_CLASS_CPP_I(Records) \
     BOOST_PP_SEQ_FOR_EACH_I(GENERATE_CONSTRUCTORS,_,Records)\
-    const SerializedData::hel SerializedData::headerSizes[] = {0 BOOST_PP_SEQ_FOR_EACH_I(GENERATE_STATIC_HEADER_SIZE,_,Records) };\
-    const SerializedData::hel SerializedData::staticSizes[] = {0 BOOST_PP_SEQ_FOR_EACH_I(GENERATE_STATIC_STATIC_SIZE,_,Records) };\
+    const size_t SerializedData::headerSizes[] = {0 BOOST_PP_SEQ_FOR_EACH_I(GENERATE_STATIC_HEADER_SIZE,_,Records) };\
+    const size_t SerializedData::staticSizes[] = {0 BOOST_PP_SEQ_FOR_EACH_I(GENERATE_STATIC_STATIC_SIZE,_,Records) };\
+    const size_t SerializedData::__LastType = BOOST_PP_SEQ_FOLD_LEFT( GENERATE_STATIC_LAST_ID , 0, Records)::ID ;
 
 #define FILTER_TEMPLATE_RECORDS_CALL(r,data,x) \
     data BOOST_PP_IF(\

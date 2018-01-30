@@ -1,14 +1,19 @@
 #define POD_DEFINITION \
-    RECORD(PODcontainer, \
-        FIELD(I8, i8) \
-        FIELD(U64, u64) \
+    RECORD(One, \
+        FIELD(a, i32) \
     )\
-    RECORD(OneBool, \
-        FIELD(B, bool) \
+    RECORD(Two, \
+        FIELD(a, i32) \
+        FIELD(b, f64) \
     )\
-    RECORD(Empty, EMPTY())\
-    RECORD(PodVector,\
-        VECTOR(vals, i32)\
+    RECORD(Three, \
+        FIELD(a, i32) \
+        VECTOR(b, i16) \
+    )\
+    RECORD(Four, EMPTY())\
+    RECORD(Five,\
+        ANY(a)\
+        ANY(b)\
     )\
     RECORD(AVector,\
         VECTOR_ANY(str)\
@@ -27,14 +32,8 @@
 
 #include "generate.h"
 
-#include "generate_namespace_include.h"
-GENERATE_PREFIX(POD_DEFINITION)
-#include "generate_class_prefix.h"
-GENERATE_CLASS_H(POD_DEFINITION)
-#include "generate_class_postfix.h"
-
-#include "generate_class_implementation.h"
-GENERATE_CLASS_CPP(POD_DEFINITION)
+GENERATE_HEADER(POD_DEFINITION)
+GENERATE_IMPLEMENTATION(POD_DEFINITION)
 
 
 #include "generate_undef.h"

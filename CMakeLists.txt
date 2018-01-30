@@ -20,21 +20,36 @@ else ()
     message( FATAL_ERROR "No googletest src dir found - set GOOGLETEST_DIR to enable!")
 endif ()
 
+set(ProtocolFiles
+    protocol/generate.h
+    protocol/generate_undef.h
+    protocol/classes.h
+    protocol/classes.imp.h
+    protocol/fields/all.h
+    protocol/fields/Any.h
+    protocol/fields/AnyOf.h
+    protocol/fields/Plain.h
+    protocol/fields/Vector.h
+    protocol/fields/VectorOfAny.h
+    protocol/fields/Last.h
+    protocol/fields/Void.h
+    )
 
 include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include ${CMAKE_CURRENT_SOURCE_DIR}/protocol)
-AUX_SOURCE_DIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/protocol ProtocolDefinitions)
 add_executable(${PROJECT_NAME} main.cpp tst_podtypes.h
     tst_podtypes_struct.h
     tst_podtypes_struct.expanded.h
-    ${ProtocolDefinitions}
+    ${ProtocolFiles}
                ${GTestSrc}/src/gtest-all.cc
                ${GMockSrc}/src/gmock-all.cc)
 add_test(${PROJECT_NAME} COMMAND ${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
-add_executable(speedTest speedtest.cpp)
+#add_executable(speedTest speedtest.cpp)
 
 set(CMAKE_CXX_STANDARD 98)
 
-add_executable(model model.cpp classes.h classes.imp.h)
+add_executable(model model.cpp
+    ${ProtocolFiles}
+    )
 
