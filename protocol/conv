@@ -1,0 +1,3 @@
+#!/bin/bash
+g++ -E -DCOMLIB_EXPORTS -DQT_VERSION=5 protocol.generator.cpp.h | awk '!/^# /' | clang-format -style=Chromium > protocol.generated.cpp.h
+g++ -E -DCOMLIB_EXPORTS -DQT_VERSION=5 protocol.generator.h | awk '!/^# /' | clang-format -style=Chromium > protocol.generated.h

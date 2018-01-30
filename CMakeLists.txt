@@ -34,3 +34,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 add_executable(speedTest speedtest.cpp)
 
+set(CMAKE_CXX_STANDARD 98)
+
+add_executable(model model.cpp classes.h classes.imp.h)
+
