@@ -2,8 +2,7 @@
     RECORD(One, \
         FIELD(a, i32) \
     )\
-/*
-RECORD(Two, \
+    RECORD(Two, \
         FIELD(a, i32) \
         FIELD(b, f64) \
     )\
@@ -29,7 +28,7 @@ RECORD(Two, \
     RECORD(Str,\
         STRING(str)\
     )
-*/
+
 
 #include "generate.h"
 

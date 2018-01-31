@@ -81,13 +81,12 @@ struct Str : Record<8 + 1, Str> {
   typedef ValueSetter<Str::str, ValueSetter<__Last, __Last> > recursive;
   static recursive create();
 };
-
 One::recursive One::create() {
   SerializedData* sd =
       new SerializedData(sizeof(SerializedData::rid) +
                          headerSize * sizeof(SerializedData::hel) + staticSize);
   RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize);
+  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
   return recursive(rc);
 }
 Two::recursive Two::create() {
@@ -95,7 +94,7 @@ Two::recursive Two::create() {
       new SerializedData(sizeof(SerializedData::rid) +
                          headerSize * sizeof(SerializedData::hel) + staticSize);
   RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize);
+  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
   return recursive(rc);
 }
 Three::recursive Three::create() {
@@ -103,7 +102,7 @@ Three::recursive Three::create() {
       new SerializedData(sizeof(SerializedData::rid) +
                          headerSize * sizeof(SerializedData::hel) + staticSize);
   RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize);
+  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
   return recursive(rc);
 }
 Four::recursive Four::create() {
@@ -111,7 +110,7 @@ Four::recursive Four::create() {
       new SerializedData(sizeof(SerializedData::rid) +
                          headerSize * sizeof(SerializedData::hel) + staticSize);
   RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize);
+  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
   return recursive(rc);
 }
 Five::recursive Five::create() {
@@ -119,7 +118,7 @@ Five::recursive Five::create() {
       new SerializedData(sizeof(SerializedData::rid) +
                          headerSize * sizeof(SerializedData::hel) + staticSize);
   RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize);
+  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
   return recursive(rc);
 }
 AVector::recursive AVector::create() {
@@ -127,7 +126,7 @@ AVector::recursive AVector::create() {
       new SerializedData(sizeof(SerializedData::rid) +
                          headerSize * sizeof(SerializedData::hel) + staticSize);
   RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize);
+  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
   return recursive(rc);
 }
 String::recursive String::create() {
@@ -135,7 +134,7 @@ String::recursive String::create() {
       new SerializedData(sizeof(SerializedData::rid) +
                          headerSize * sizeof(SerializedData::hel) + staticSize);
   RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize);
+  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
   return recursive(rc);
 }
 Rec::recursive Rec::create() {
@@ -143,7 +142,7 @@ Rec::recursive Rec::create() {
       new SerializedData(sizeof(SerializedData::rid) +
                          headerSize * sizeof(SerializedData::hel) + staticSize);
   RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize);
+  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
   return recursive(rc);
 }
 Str::recursive Str::create() {
@@ -151,7 +150,7 @@ Str::recursive Str::create() {
       new SerializedData(sizeof(SerializedData::rid) +
                          headerSize * sizeof(SerializedData::hel) + staticSize);
   RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize);
+  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
   return recursive(rc);
 }
 const size_t SerializedData::headerSizes[] = {0,

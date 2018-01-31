@@ -29,10 +29,10 @@ TEST(Simple, SimpleProtocol)
     ASSERT_THAT(data->field<One::a>().value(), Eq(42));
     ASSERT_THAT(data->size(), Eq(2+4));
 
-    //ASSERT_THROW(data->field<Two::a>(), WrongType);
+    ASSERT_THROW(data->field<Two::a>(), WrongType);
     delete data;
 }
-/*
+
 TEST(Vector, SimpleProtocol)
 {
     auto data = Three::create().set(12).add(42).add(24).add(77).finish().finish();
@@ -105,6 +105,7 @@ TEST(IncompleteCreation, SimpleProtocol)
     auto b = a.beginRecursive<Three>()
             .set(42);
     ASSERT_THROW(a.next(), WrongCreationOrder);
+    b.cancelCreation();
     //b.cancelCreation();
     //delete data;
 }
