@@ -1,19 +1,30 @@
 #include <boost/preprocessor/comparison/greater.hpp>
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/list.hpp>
+#include <boost/preprocessor/punctuation/remove_parens.hpp>
 
-#define FIELD(name, type) ((Plain<type>)(name))
-#define VECTOR(name, type) ((Vector<type>)(name))
-#define ANY(name) ((Any)(name))
-#define EMPTY()    ((Void)(__void))
-#define STRING(name) VECTOR(name, char)
-#define VECTOR_ANY(name) ((VectorOfAny)(name))
-//#define STRING(name) ((String)(name)(First))
 #define RECORD(name, Fields) ((name)()(Fields))
+
+#define FIELD(name, type) ((PROTO_NAMESPACE::Plain<type>)(name))
+#define VECTOR(name, type) ((PROTO_NAMESPACE::Vector<type>)(name))
+#define ANY(name) ((PROTO_NAMESPACE::Any)(name))
+#define EMPTY()    ((PROTO_NAMESPACE::Void)(__void))
+#define STRING(name) VECTOR(name, char)
+#define VECTOR_ANY(name) ((PROTO_NAMESPACE::VectorOfAny)(name))
+
+#define GENERATE_ID_VALIDATOR(s, state, x) \
+    (PROTO_NAMESPACE::IDValidator< x::ID, BOOST_PP_REMOVE_PARENS(state) >)
+
+#define GENERATE_ID_VALIDATOR_SEQ(seq) \
+    BOOST_PP_REMOVE_PARENS(BOOST_PP_SEQ_FOLD_LEFT(GENERATE_ID_VALIDATOR, PROTO_NAMESPACE::__Last, seq))
+
+#define ANY_OF(name, types) (( (PROTO_NAMESPACE::AnyOf< GENERATE_ID_VALIDATOR_SEQ(types) >) )(name))
+//#define ANY_OF(name, type) (((PROTO_NAMESPACE::Any)(name))
+
 
 
 #define DECLARE_FIELD(r, data, descr) \
-    struct BOOST_PP_SEQ_ELEM(1, descr): Field<BOOST_PP_SEQ_ELEM(0, descr), BOOST_PP_SEQ_ELEM(2,descr) > {};
+    struct BOOST_PP_SEQ_ELEM(1, descr): Field< BOOST_PP_REMOVE_PARENS( BOOST_PP_SEQ_ELEM(0, descr) ), BOOST_PP_SEQ_ELEM(2,descr) > {};
 
 #define GENERATE_PARENT(s, state, x) \
     BOOST_PP_SEQ_PUSH_FRONT(state, \
@@ -24,7 +35,7 @@
 #define GENERATE_STRUCTS(Fields)\
     BOOST_PP_SEQ_TAIL(BOOST_PP_SEQ_REVERSE(\
             BOOST_PP_SEQ_FOLD_LEFT(GENERATE_PARENT, \
-                           (()(First)) \
+                           (()(PROTO_NAMESPACE::First)) \
                            , Fields)\
     ))
 
@@ -125,7 +136,7 @@
     BOOST_PP_CAT(GENERATE_CONSTRUCTOR_SETTER_, BOOST_PP_SEQ_ELEM(0,x)) (BOOST_PP_SEQ_ELEM(1,x), BOOST_PP_SEQ_ELEM(2,x))
 
 #define GENERATE_VALUE_SETTER_CHAIN(r, data, Field) \
-    ValueSetter < data::BOOST_PP_SEQ_ELEM(1,Field),
+    PROTO_NAMESPACE::ValueSetter < data::BOOST_PP_SEQ_ELEM(1,Field),
 
 #define GENERATE_VALUE_SETTER_CHAIN_VALCON(r, data, x)\
     >
@@ -142,11 +153,11 @@ BOOST_PP_SEQ_FOR_EACH(GENERATE_VALUE_SETTER_CHAIN_ROOT,_, Fields)\
 */
 
 #define GENERATE_VALUE_SETTER_CONSTRUCTOR(Name,Fields) \
-    Name::constructor<ValueSetter<__Last, __Last> >::type
+    Name::constructor<PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last, PROTO_NAMESPACE::__Last> >::type
 
 
 #define GENERATE_RECORD(Name, Id, Fields) \
-struct Name: Record<Id, Name> { \
+struct Name: PROTO_NAMESPACE::Record<Id, Name> { \
     BOOST_PP_SEQ_FOR_EACH(DECLARE_FIELD,_,GENERATE_STRUCTS(Fields))\
     \
     enum {\
@@ -156,38 +167,22 @@ struct Name: Record<Id, Name> { \
     \
     typedef \
     BOOST_PP_SEQ_FOR_EACH(GENERATE_VALUE_SETTER_CHAIN,Name, Fields)\
-    ValueSetter<__Last, __Last> \
+    PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last, PROTO_NAMESPACE::__Last> \
     BOOST_PP_SEQ_FOR_EACH(GENERATE_VALUE_SETTER_CHAIN_VALCON,_, Fields)\
     recursive;\
     \
     static recursive create();\
 };\
 
-
-#define GENERATE_CONSTRUCTOR_VECTOR_SIZE_Field(name)
-#define GENERATE_CONSTRUCTOR_VECTOR_SIZE_Vector(name)\
-    *(reinterpret_cast<hel*>(___offset)) = byte_order_to_le((BOOST_PP_CAT(___Vector_,name).end()-BOOST_PP_CAT(___Vector_,name).begin())*sizeof(*BOOST_PP_CAT(___Vector_,name).begin()));\
-    ___offset += sizeof(hel);
-#define GENERATE_CONSTRUCTOR_VECTOR_SIZE_Any(name)\
-    *(reinterpret_cast<hel*>(___offset)) = byte_order_to_le(name->size());\
-    ___offset += sizeof(hel);
-#define GENERATE_CONSTRUCTOR_VECTOR_SIZE_Void(name)
-#define GENERATE_CONSTRUCTOR_VECTOR_SIZE_String(name)\
-    *(reinterpret_cast<hel*>(___offset)) = byte_order_to_le((BOOST_PP_CAT(___Vector_,name).end()-BOOST_PP_CAT(___Vector_,name).begin())*sizeof(char));\
-    ___offset += sizeof(hel);
-
-#define GENERATE_CONSTRUCTOR_VECTOR_SIZE(r, data, x) \
-    BOOST_PP_CAT(GENERATE_CONSTRUCTOR_VECTOR_SIZE_, BOOST_PP_SEQ_ELEM(0,x))(BOOST_PP_SEQ_ELEM(1,x))
-
 #define GENERATE_CONSTRUCTOR(Name, Fields)\
 Name::recursive Name::create()\
 {\
-    SerializedData* sd = new SerializedData(sizeof(SerializedData::rid) + \
+    PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(sizeof(PROTO_NAMESPACE::SerializedData::rid) + \
                                             headerSize * \
-                                            sizeof(SerializedData::hel) + \
+                                            sizeof(PROTO_NAMESPACE::SerializedData::hel) + \
                                             staticSize); \
-    RecordConstructor *rc = new RecordConstructor(sd); \
-    rc->beginNested(ID, staticSize, headerSize, rc->fuse()); \
+    PROTO_NAMESPACE::RecordConstructor *rc = new PROTO_NAMESPACE::RecordConstructor(sd); \
+    rc->beginNested(ID, staticSize, headerSize, {0,0}); \
     return recursive(rc); \
 }\
 
@@ -269,9 +264,9 @@ Name::recursive Name::create()\
 
 #define GENERATE_CLASS_CPP_I(Records) \
     BOOST_PP_SEQ_FOR_EACH_I(GENERATE_CONSTRUCTORS,_,Records)\
-    const size_t SerializedData::headerSizes[] = {0 BOOST_PP_SEQ_FOR_EACH_I(GENERATE_STATIC_HEADER_SIZE,_,Records) };\
-    const size_t SerializedData::staticSizes[] = {0 BOOST_PP_SEQ_FOR_EACH_I(GENERATE_STATIC_STATIC_SIZE,_,Records) };\
-    const size_t SerializedData::__LastType = BOOST_PP_SEQ_FOLD_LEFT( GENERATE_STATIC_LAST_ID , 0, Records)::ID ;
+    const size_t PROTO_NAMESPACE::SerializedData::headerSizes[] = {0 BOOST_PP_SEQ_FOR_EACH_I(GENERATE_STATIC_HEADER_SIZE,_,Records) };\
+    const size_t PROTO_NAMESPACE::SerializedData::staticSizes[] = {0 BOOST_PP_SEQ_FOR_EACH_I(GENERATE_STATIC_STATIC_SIZE,_,Records) };\
+    const size_t PROTO_NAMESPACE::SerializedData::__LastType = BOOST_PP_SEQ_FOLD_LEFT( GENERATE_STATIC_LAST_ID , 0, Records)::ID ;
 
 #define FILTER_TEMPLATE_RECORDS_CALL(r,data,x) \
     data BOOST_PP_IF(\

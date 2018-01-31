@@ -1,176 +1,253 @@
 
 
-struct One : Record<0 + 1, One> {
-  struct a : Field<Plain<i32>, First> {};
+struct One : PROTO_NAMESPACE::Record<0 + 1, One> {
+  struct a : Field<PROTO_NAMESPACE::Plain<i32>, PROTO_NAMESPACE::First> {};
   enum { headerSize = 0 + a::headerSize, staticSize = 0 + a::staticSize };
-  typedef ValueSetter<One::a, ValueSetter<__Last, __Last> > recursive;
+  typedef PROTO_NAMESPACE::ValueSetter<
+      One::a,
+      PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last,
+                                   PROTO_NAMESPACE::__Last> >
+      recursive;
   static recursive create();
 };
-struct Two : Record<1 + 1, Two> {
-  struct a : Field<Plain<i32>, First> {};
-  struct b : Field<Plain<f64>, a> {};
+struct Two : PROTO_NAMESPACE::Record<1 + 1, Two> {
+  struct a : Field<PROTO_NAMESPACE::Plain<i32>, PROTO_NAMESPACE::First> {};
+  struct b : Field<PROTO_NAMESPACE::Plain<f64>, a> {};
   enum {
     headerSize = 0 + a::headerSize + b::headerSize,
     staticSize = 0 + a::staticSize + b::staticSize
   };
-  typedef ValueSetter<Two::a,
-                      ValueSetter<Two::b, ValueSetter<__Last, __Last> > >
+  typedef PROTO_NAMESPACE::ValueSetter<
+      Two::a,
+      PROTO_NAMESPACE::ValueSetter<
+          Two::b,
+          PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last,
+                                       PROTO_NAMESPACE::__Last> > >
       recursive;
   static recursive create();
 };
-struct Three : Record<2 + 1, Three> {
-  struct a : Field<Plain<i32>, First> {};
-  struct b : Field<Vector<i16>, a> {};
+struct Three : PROTO_NAMESPACE::Record<2 + 1, Three> {
+  struct a : Field<PROTO_NAMESPACE::Plain<i32>, PROTO_NAMESPACE::First> {};
+  struct b : Field<PROTO_NAMESPACE::Vector<i16>, a> {};
   enum {
     headerSize = 0 + a::headerSize + b::headerSize,
     staticSize = 0 + a::staticSize + b::staticSize
   };
-  typedef ValueSetter<Three::a,
-                      ValueSetter<Three::b, ValueSetter<__Last, __Last> > >
+  typedef PROTO_NAMESPACE::ValueSetter<
+      Three::a,
+      PROTO_NAMESPACE::ValueSetter<
+          Three::b,
+          PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last,
+                                       PROTO_NAMESPACE::__Last> > >
       recursive;
   static recursive create();
 };
-struct Four : Record<3 + 1, Four> {
-  struct __void : Field<Void, First> {};
+struct Four : PROTO_NAMESPACE::Record<3 + 1, Four> {
+  struct __void : Field<PROTO_NAMESPACE::Void, PROTO_NAMESPACE::First> {};
   enum {
     headerSize = 0 + __void::headerSize,
     staticSize = 0 + __void::staticSize
   };
-  typedef ValueSetter<Four::__void, ValueSetter<__Last, __Last> > recursive;
+  typedef PROTO_NAMESPACE::ValueSetter<
+      Four::__void,
+      PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last,
+                                   PROTO_NAMESPACE::__Last> >
+      recursive;
   static recursive create();
 };
-struct Five : Record<4 + 1, Five> {
-  struct a : Field<Any, First> {};
-  struct b : Field<Any, a> {};
+struct Five : PROTO_NAMESPACE::Record<4 + 1, Five> {
+  struct a : Field<PROTO_NAMESPACE::Any, PROTO_NAMESPACE::First> {};
+  struct b : Field<PROTO_NAMESPACE::Any, a> {};
   enum {
     headerSize = 0 + a::headerSize + b::headerSize,
     staticSize = 0 + a::staticSize + b::staticSize
   };
-  typedef ValueSetter<Five::a,
-                      ValueSetter<Five::b, ValueSetter<__Last, __Last> > >
+  typedef PROTO_NAMESPACE::ValueSetter<
+      Five::a,
+      PROTO_NAMESPACE::ValueSetter<
+          Five::b,
+          PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last,
+                                       PROTO_NAMESPACE::__Last> > >
       recursive;
   static recursive create();
 };
-struct AVector : Record<5 + 1, AVector> {
-  struct str : Field<VectorOfAny, First> {};
-  enum { headerSize = 0 + str::headerSize, staticSize = 0 + str::staticSize };
-  typedef ValueSetter<AVector::str, ValueSetter<__Last, __Last> > recursive;
+struct Six : PROTO_NAMESPACE::Record<5 + 1, Six> {
+  struct a : Field<PROTO_NAMESPACE::VectorOfAny, PROTO_NAMESPACE::First> {};
+  enum { headerSize = 0 + a::headerSize, staticSize = 0 + a::staticSize };
+  typedef PROTO_NAMESPACE::ValueSetter<
+      Six::a,
+      PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last,
+                                   PROTO_NAMESPACE::__Last> >
+      recursive;
   static recursive create();
 };
-struct String : Record<6 + 1, String> {
-  struct str : Field<Vector<char>, First> {};
-  enum { headerSize = 0 + str::headerSize, staticSize = 0 + str::staticSize };
-  typedef ValueSetter<String::str, ValueSetter<__Last, __Last> > recursive;
+struct Seven : PROTO_NAMESPACE::Record<6 + 1, Seven> {
+  struct a : Field<PROTO_NAMESPACE::Plain<i32>, PROTO_NAMESPACE::First> {};
+  struct b : Field<PROTO_NAMESPACE::VectorOfAny, a> {};
+  enum {
+    headerSize = 0 + a::headerSize + b::headerSize,
+    staticSize = 0 + a::staticSize + b::staticSize
+  };
+  typedef PROTO_NAMESPACE::ValueSetter<
+      Seven::a,
+      PROTO_NAMESPACE::ValueSetter<
+          Seven::b,
+          PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last,
+                                       PROTO_NAMESPACE::__Last> > >
+      recursive;
   static recursive create();
 };
-struct Rec : Record<7 + 1, Rec> {
-  struct ids : Field<Vector<i64>, First> {};
-  struct strings : Field<VectorOfAny, ids> {};
+struct Eight : PROTO_NAMESPACE::Record<7 + 1, Eight> {
+  struct a : Field<PROTO_NAMESPACE::AnyOf<
+                       PROTO_NAMESPACE::IDValidator<One::ID,
+                                                    PROTO_NAMESPACE::__Last> >,
+                   PROTO_NAMESPACE::First> {};
+  enum { headerSize = 0 + a::headerSize, staticSize = 0 + a::staticSize };
+  typedef PROTO_NAMESPACE::ValueSetter<
+      Eight::a,
+      PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last,
+                                   PROTO_NAMESPACE::__Last> >
+      recursive;
+  static recursive create();
+};
+struct String : PROTO_NAMESPACE::Record<8 + 1, String> {
+  struct str : Field<PROTO_NAMESPACE::Vector<char>, PROTO_NAMESPACE::First> {};
+  enum { headerSize = 0 + str::headerSize, staticSize = 0 + str::staticSize };
+  typedef PROTO_NAMESPACE::ValueSetter<
+      String::str,
+      PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last,
+                                   PROTO_NAMESPACE::__Last> >
+      recursive;
+  static recursive create();
+};
+struct Rec : PROTO_NAMESPACE::Record<9 + 1, Rec> {
+  struct ids : Field<PROTO_NAMESPACE::Vector<i64>, PROTO_NAMESPACE::First> {};
+  struct strings : Field<PROTO_NAMESPACE::VectorOfAny, ids> {};
   enum {
     headerSize = 0 + ids::headerSize + strings::headerSize,
     staticSize = 0 + ids::staticSize + strings::staticSize
   };
-  typedef ValueSetter<Rec::ids,
-                      ValueSetter<Rec::strings, ValueSetter<__Last, __Last> > >
+  typedef PROTO_NAMESPACE::ValueSetter<
+      Rec::ids,
+      PROTO_NAMESPACE::ValueSetter<
+          Rec::strings,
+          PROTO_NAMESPACE::ValueSetter<PROTO_NAMESPACE::__Last,
+                                       PROTO_NAMESPACE::__Last> > >
       recursive;
   static recursive create();
 };
-struct Str : Record<8 + 1, Str> {
-  struct str : Field<Vector<char>, First> {};
-  enum { headerSize = 0 + str::headerSize, staticSize = 0 + str::staticSize };
-  typedef ValueSetter<Str::str, ValueSetter<__Last, __Last> > recursive;
-  static recursive create();
-};
 One::recursive One::create() {
-  SerializedData* sd =
-      new SerializedData(sizeof(SerializedData::rid) +
-                         headerSize * sizeof(SerializedData::hel) + staticSize);
-  RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
+  PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
+      sizeof(PROTO_NAMESPACE::SerializedData::rid) +
+      headerSize * sizeof(PROTO_NAMESPACE::SerializedData::hel) + staticSize);
+  PROTO_NAMESPACE::RecordConstructor* rc =
+      new PROTO_NAMESPACE::RecordConstructor(sd);
+  rc->beginNested(ID, staticSize, headerSize, {0, 0});
   return recursive(rc);
 }
 Two::recursive Two::create() {
-  SerializedData* sd =
-      new SerializedData(sizeof(SerializedData::rid) +
-                         headerSize * sizeof(SerializedData::hel) + staticSize);
-  RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
+  PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
+      sizeof(PROTO_NAMESPACE::SerializedData::rid) +
+      headerSize * sizeof(PROTO_NAMESPACE::SerializedData::hel) + staticSize);
+  PROTO_NAMESPACE::RecordConstructor* rc =
+      new PROTO_NAMESPACE::RecordConstructor(sd);
+  rc->beginNested(ID, staticSize, headerSize, {0, 0});
   return recursive(rc);
 }
 Three::recursive Three::create() {
-  SerializedData* sd =
-      new SerializedData(sizeof(SerializedData::rid) +
-                         headerSize * sizeof(SerializedData::hel) + staticSize);
-  RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
+  PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
+      sizeof(PROTO_NAMESPACE::SerializedData::rid) +
+      headerSize * sizeof(PROTO_NAMESPACE::SerializedData::hel) + staticSize);
+  PROTO_NAMESPACE::RecordConstructor* rc =
+      new PROTO_NAMESPACE::RecordConstructor(sd);
+  rc->beginNested(ID, staticSize, headerSize, {0, 0});
   return recursive(rc);
 }
 Four::recursive Four::create() {
-  SerializedData* sd =
-      new SerializedData(sizeof(SerializedData::rid) +
-                         headerSize * sizeof(SerializedData::hel) + staticSize);
-  RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
+  PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
+      sizeof(PROTO_NAMESPACE::SerializedData::rid) +
+      headerSize * sizeof(PROTO_NAMESPACE::SerializedData::hel) + staticSize);
+  PROTO_NAMESPACE::RecordConstructor* rc =
+      new PROTO_NAMESPACE::RecordConstructor(sd);
+  rc->beginNested(ID, staticSize, headerSize, {0, 0});
   return recursive(rc);
 }
 Five::recursive Five::create() {
-  SerializedData* sd =
-      new SerializedData(sizeof(SerializedData::rid) +
-                         headerSize * sizeof(SerializedData::hel) + staticSize);
-  RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
+  PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
+      sizeof(PROTO_NAMESPACE::SerializedData::rid) +
+      headerSize * sizeof(PROTO_NAMESPACE::SerializedData::hel) + staticSize);
+  PROTO_NAMESPACE::RecordConstructor* rc =
+      new PROTO_NAMESPACE::RecordConstructor(sd);
+  rc->beginNested(ID, staticSize, headerSize, {0, 0});
   return recursive(rc);
 }
-AVector::recursive AVector::create() {
-  SerializedData* sd =
-      new SerializedData(sizeof(SerializedData::rid) +
-                         headerSize * sizeof(SerializedData::hel) + staticSize);
-  RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
+Six::recursive Six::create() {
+  PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
+      sizeof(PROTO_NAMESPACE::SerializedData::rid) +
+      headerSize * sizeof(PROTO_NAMESPACE::SerializedData::hel) + staticSize);
+  PROTO_NAMESPACE::RecordConstructor* rc =
+      new PROTO_NAMESPACE::RecordConstructor(sd);
+  rc->beginNested(ID, staticSize, headerSize, {0, 0});
+  return recursive(rc);
+}
+Seven::recursive Seven::create() {
+  PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
+      sizeof(PROTO_NAMESPACE::SerializedData::rid) +
+      headerSize * sizeof(PROTO_NAMESPACE::SerializedData::hel) + staticSize);
+  PROTO_NAMESPACE::RecordConstructor* rc =
+      new PROTO_NAMESPACE::RecordConstructor(sd);
+  rc->beginNested(ID, staticSize, headerSize, {0, 0});
+  return recursive(rc);
+}
+Eight::recursive Eight::create() {
+  PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
+      sizeof(PROTO_NAMESPACE::SerializedData::rid) +
+      headerSize * sizeof(PROTO_NAMESPACE::SerializedData::hel) + staticSize);
+  PROTO_NAMESPACE::RecordConstructor* rc =
+      new PROTO_NAMESPACE::RecordConstructor(sd);
+  rc->beginNested(ID, staticSize, headerSize, {0, 0});
   return recursive(rc);
 }
 String::recursive String::create() {
-  SerializedData* sd =
-      new SerializedData(sizeof(SerializedData::rid) +
-                         headerSize * sizeof(SerializedData::hel) + staticSize);
-  RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
+  PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
+      sizeof(PROTO_NAMESPACE::SerializedData::rid) +
+      headerSize * sizeof(PROTO_NAMESPACE::SerializedData::hel) + staticSize);
+  PROTO_NAMESPACE::RecordConstructor* rc =
+      new PROTO_NAMESPACE::RecordConstructor(sd);
+  rc->beginNested(ID, staticSize, headerSize, {0, 0});
   return recursive(rc);
 }
 Rec::recursive Rec::create() {
-  SerializedData* sd =
-      new SerializedData(sizeof(SerializedData::rid) +
-                         headerSize * sizeof(SerializedData::hel) + staticSize);
-  RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
+  PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
+      sizeof(PROTO_NAMESPACE::SerializedData::rid) +
+      headerSize * sizeof(PROTO_NAMESPACE::SerializedData::hel) + staticSize);
+  PROTO_NAMESPACE::RecordConstructor* rc =
+      new PROTO_NAMESPACE::RecordConstructor(sd);
+  rc->beginNested(ID, staticSize, headerSize, {0, 0});
   return recursive(rc);
 }
-Str::recursive Str::create() {
-  SerializedData* sd =
-      new SerializedData(sizeof(SerializedData::rid) +
-                         headerSize * sizeof(SerializedData::hel) + staticSize);
-  RecordConstructor* rc = new RecordConstructor(sd);
-  rc->beginNested(ID, staticSize, headerSize, rc->fuse());
-  return recursive(rc);
-}
-const size_t SerializedData::headerSizes[] = {0,
-                                              One::headerSize,
-                                              Two::headerSize,
-                                              Three::headerSize,
-                                              Four::headerSize,
-                                              Five::headerSize,
-                                              AVector::headerSize,
-                                              String::headerSize,
-                                              Rec::headerSize,
-                                              Str::headerSize};
-const size_t SerializedData::staticSizes[] = {0,
-                                              One::staticSize,
-                                              Two::staticSize,
-                                              Three::staticSize,
-                                              Four::staticSize,
-                                              Five::staticSize,
-                                              AVector::staticSize,
-                                              String::staticSize,
-                                              Rec::staticSize,
-                                              Str::staticSize};
-const size_t SerializedData::__LastType = Str::ID;
+const size_t PROTO_NAMESPACE::SerializedData::headerSizes[] = {
+    0,
+    One::headerSize,
+    Two::headerSize,
+    Three::headerSize,
+    Four::headerSize,
+    Five::headerSize,
+    Six::headerSize,
+    Seven::headerSize,
+    Eight::headerSize,
+    String::headerSize,
+    Rec::headerSize};
+const size_t PROTO_NAMESPACE::SerializedData::staticSizes[] = {
+    0,
+    One::staticSize,
+    Two::staticSize,
+    Three::staticSize,
+    Four::staticSize,
+    Five::staticSize,
+    Six::staticSize,
+    Seven::staticSize,
+    Eight::staticSize,
+    String::staticSize,
+    Rec::staticSize};
+const size_t PROTO_NAMESPACE::SerializedData::__LastType = Rec::ID;

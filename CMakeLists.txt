@@ -2,6 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
 set(CMAKE_CXX_STANDARD 11)
 
+
 PROJECT(simpleProtocol
         LANGUAGES CXX)
 
@@ -37,14 +38,25 @@ set(ProtocolFiles
     )
 
 include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include ${CMAKE_CURRENT_SOURCE_DIR}/protocol)
-add_executable(${PROJECT_NAME} main.cpp tst_podtypes.h
+add_executable(tests_little main.cpp tst_podtypes.h
     tst_podtypes_struct.h
     tst_podtypes_struct.expanded.h
     ${ProtocolFiles}
                ${GTestSrc}/src/gtest-all.cc
                ${GMockSrc}/src/gmock-all.cc)
-add_test(${PROJECT_NAME} COMMAND ${PROJECT_NAME})
-target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
+target_compile_definitions(tests_little PRIVATE PROTO_SEND_ENDIAN=little)
+add_test(${PROJECT_NAME} COMMAND tests_little)
+target_link_libraries(tests_little PRIVATE Threads::Threads)
+
+#add_executable(tests_big main.cpp tst_podtypes.h
+#    tst_podtypes_struct.h
+#    tst_podtypes_struct.expanded.h
+#    ${ProtocolFiles}
+#               ${GTestSrc}/src/gtest-all.cc
+#               ${GMockSrc}/src/gmock-all.cc)
+#target_compile_definitions(tests_big PRIVATE PROTO_SEND_ENDIAN=big)
+#add_test(${PROJECT_NAME} COMMAND tests_big)
+#target_link_libraries(tests_big PRIVATE Threads::Threads)
 
 #add_executable(speedTest speedtest.cpp)
 

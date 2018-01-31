@@ -1,5 +1,3 @@
-#include <vector>
-#include <iterator>
 
 template <typename type>
 class Vector: public FieldType {
@@ -21,14 +19,14 @@ public:
         const type* data = reinterpret_cast<const type*>(dynamicData);
         for(int i=result.size()-1; i>=0; --i)
         {
-            result[i] = little_to_native(data[i]);
+            result[i] = to_native(data[i]);
         }
         return result;
     }
 
     const type get(size_t index) const {
         if(index>=size()) throw WrongIndex();
-        return little_to_native(reinterpret_cast<const type*>(dynamicData)[index]);
+        return to_native(reinterpret_cast<const type*>(dynamicData)[index]);
     }
 
 
@@ -55,7 +53,7 @@ public:
 
             for(int i=vector.size()-1; i>=0; --i)
             {
-                data[i] = native_to_little(vector[i]);
+                data[i] = from_native(vector[i]);
             }
             return ValueSetter<Field, Next>(constructor);
         }
@@ -71,14 +69,14 @@ public:
                         );
             while(first != last)
             {
-                *data++ = native_to_little(*first++);
+                *data++ = from_native(*first++);
             }
             return *static_cast<ValueSetter<Field, Next>*>(this);
         }
 
         ValueSetter<Field, Next> add(type value)
         {
-            *reinterpret_cast<type*>(constructor->dynamicData(sizeof(type), fuse)) = native_to_little(value);
+            *reinterpret_cast<type*>(constructor->dynamicData(sizeof(type), fuse)) = from_native(value);
             return *static_cast<ValueSetter<Field, Next>*>(this);
         }
 

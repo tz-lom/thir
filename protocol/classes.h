@@ -1,37 +1,71 @@
 #ifndef PROTO_DYNAMIC_SIZE_TYPE
-# define PROTO_DYNAMIC_SIZE_TYPE uint32_t
+#  define PROTO_DYNAMIC_SIZE_TYPE uint32_t
 #endif
 #ifndef PROTO_ID_TYPE
-# define PROTO_ID_TYPE uint16_t
+#  define PROTO_ID_TYPE uint16_t
 #endif
 #ifndef PROTO_NAMESPACE
-#  define PROTO_NAMESPACE
+#  define PROTO_NAMESPACE Proto
+#endif
+#ifndef PROTO_SEND_ENDIAN
+#  define PROTO_SEND_ENDIAN little
 #endif
 
 #include <vector>
 #include <stdint.h>
 #include <boost/endian/conversion.hpp>
+
+namespace PROTO_NAMESPACE {
+
 using namespace ::boost::endian;
 
 #if __cplusplus < 201103L
 #define nullptr (0)
-
-template<bool B, class T = void>
-struct enable_if {};
-
-template<class T>
-struct enable_if<true, T> { typedef T type; };
-
-template<class T, class U>
-struct is_same { enum {value=false}; };
-
-template<class T>
-struct is_same<T, T> { enum {value=true}; };
-#else
-#include <type_traits>
-using std::enable_if;
-using std::is_same;
 #endif
+
+#define PPCAT_NX(A, B) A ## B
+#define PPCAT(A, B) PPCAT_NX(A, B)
+
+template <class EndianReversible >
+inline EndianReversible  to_native(EndianReversible  x)
+{
+    return PPCAT(PROTO_SEND_ENDIAN, _to_native)(x);
+}
+
+template <class EndianReversible >
+inline EndianReversible  from_native(EndianReversible  x)
+{
+    return PPCAT(native_to_, PROTO_SEND_ENDIAN)(x);
+}
+
+template<>
+inline double to_native(double x)
+{
+    return x;
+}
+
+template<>
+inline float to_native(float x)
+{
+    return x;
+}
+
+
+template<>
+inline double from_native(double x)
+{
+    return x;
+}
+
+template<>
+inline float from_native(float x)
+{
+    return x;
+}
+
+#undef PPCAT
+#undef PPCAT_NX
+
 
 struct First {
     enum {
@@ -89,7 +123,7 @@ public:
     inline rid id() const {
       if (allocated == 0)
         return 0;
-      return *(reinterpret_cast<const rid*>(data()));
+      return to_native(*(reinterpret_cast<const rid*>(data())));
     }
 
     std::size_t size() const;
@@ -104,13 +138,13 @@ public:
         const char* staticData = offset + sizeof(hel) * Field::record::headerSize;
         const char* dynamicData = staticData + Field::record::staticSize;
         for (int i = Field::dynamicOffset - 1; i >= 0; --i) {
-          dynamicData += little_to_native(reinterpret_cast<const hel*>(offset)[i]);
+          dynamicData += to_native(reinterpret_cast<const hel*>(offset)[i]);
         }
 
         return typename Field::T(
                     staticData + Field::staticOffset,
                     dynamicData,
-                    (reinterpret_cast<const hel*>(offset)[Field::dynamicOffset])
+                    to_native(reinterpret_cast<const hel*>(offset)[Field::dynamicOffset])
                 );
     }
 
@@ -157,11 +191,11 @@ public:
     void cancelCreation();
 
 protected:
-    size_t order;
     SerializedData* data;
     size_t dynamicOffset;
     std::vector<size_t> staticOffset;
     std::vector<size_t> dynamicSizeOffset;
+    std::vector<size_t> order;
 
     char* dynamicData(size_t size);
     void nextDynamic();
@@ -187,3 +221,4 @@ struct Record {
   };
 };
 
+}

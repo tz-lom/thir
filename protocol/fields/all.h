@@ -1,3 +1,5 @@
+namespace PROTO_NAMESPACE {
+
 #include "base.h"
 #include "Last.h"
 
@@ -7,4 +9,6 @@
 #include "VectorOfAny.h"
 
 #include "Void.h"
-//#include "AnyOf.h"
+#include "AnyOf.h"
+
+}

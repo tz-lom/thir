@@ -19,9 +19,14 @@ typedef int16_t  i16;
 typedef uint8_t  u8;
 typedef int8_t   i8;
 
+//#define PRECOMPILED
+#ifdef PRECOMPILED
+#  include "tst_podtypes_struct.expanded.h"
+#else
+#  include "tst_podtypes_struct.h"
+#endif
 
-//#include "tst_podtypes_struct.expanded.h"
-#include "tst_podtypes_struct.h"
+using namespace Proto;
 
 TEST(Simple, SimpleProtocol)
 {
@@ -99,15 +104,82 @@ TEST(Any, SimpleProtocol)
     delete data;
 }
 
-TEST(IncompleteCreation, SimpleProtocol)
+TEST(IncorrectCreation, SimpleProtocol)
 {
     auto a = Five::create();
     auto b = a.beginRecursive<Three>()
             .set(42);
     ASSERT_THROW(a.next(), WrongCreationOrder);
+    b.cancelCreation(); // prevent leakage
+}
+
+TEST(VectorOfAny, SimpleProtocol)
+{
+    auto a = Six::create();
+    a.add<One>().set(10).finish();
+    a.add<Two>().set(11).set(12).finish();
+    auto data = a.finish().finish();
+
+    ASSERT_EQ(data->field<Six::a>().get(0).field<One::a>().value(), 10);
+    ASSERT_EQ(data->field<Six::a>().get(1).field<Two::a>().value(), 11);
+    ASSERT_EQ(data->field<Six::a>().get(1).field<Two::b>().value(), 12);
+
+    delete data;
+}
+
+
+TEST(DoubleInitialization, SimpleProtocol)
+{
+    auto a = Seven::create();
+    auto b = a.set(42);
+    ASSERT_THROW(a.set(12), WrongCreationOrder);
+    b.add<One>().set(10).finish();
+    b.add<Two>().set(11).set(12).finish();
+    ASSERT_THROW(a.set(1), WrongCreationOrder);
+    auto data = b.finish().finish();
+
+    ASSERT_EQ(data->field<Seven::a>().value(), 42);
+    ASSERT_EQ(data->field<Seven::b>().get(0).field<One::a>().value(), 10);
+    ASSERT_EQ(data->field<Seven::b>().get(1).field<Two::a>().value(), 11);
+    ASSERT_EQ(data->field<Seven::b>().get(1).field<Two::b>().value(), 12);
+
+    delete data;
+}
+
+TEST(SneakyDoubleInitialization, SimpleProtocol)
+{
+    auto a = Seven::create();
+    auto b = a.set(42);
+    ASSERT_THROW(a.set(12), WrongCreationOrder);
+    auto c = b.add<One>();
+    c.set(10).finish();
+    ASSERT_THROW(c.set(1), WrongCreationOrder);
+    auto d = b.add<Two>();
+    ASSERT_THROW(c.set(1), WrongCreationOrder);
+    d.set(11).set(12).finish();
+    ASSERT_THROW(a.set(1), WrongCreationOrder);
+    auto data = b.finish().finish();
+
+    ASSERT_EQ(data->field<Seven::a>().value(), 42);
+    ASSERT_EQ(data->field<Seven::b>().get(0).field<One::a>().value(), 10);
+    ASSERT_EQ(data->field<Seven::b>().get(1).field<Two::a>().value(), 11);
+    ASSERT_EQ(data->field<Seven::b>().get(1).field<Two::b>().value(), 12);
+
+    delete data;
+}
+
+TEST(AnyOf, SimpleProtocol)
+{
+
+    auto a = Eight::create();
+
+    ASSERT_NO_THROW(a.beginRecursive<One>().set(2).finish());
+    delete a.next().finish();
+
+
+    auto b = Eight::create();
+    ASSERT_THROW( b.beginRecursive<Two>().set(2).set(3).finish(), WrongType);
     b.cancelCreation();
-    //b.cancelCreation();
-    //delete data;
 }
 
 /*

@@ -15,7 +15,7 @@ typedef int16_t  i16;
 typedef uint8_t  u8;
 typedef int8_t   i8;
 
-#include "tst_podtypes_struct.h"
+#include "tst_podtypes_struct.expanded.h"
 
 #include <vector>
 #include <string>
@@ -363,8 +363,22 @@ const std::vector<int64_t> kIntegers = {
     -102
 };
 
+
+/*
+template< auto Type, typename NextCheck>
+struct IDValidator
+{
+    static bool check(SerializedData::rid id)
+    {
+        return (id==Type::ID) || NextCheck::check(id);
+    }
+};
+*/
+
+
 int main()
 {
+
     auto start = std::chrono::high_resolution_clock::now();
     size_t size ;
     for(int i=0; i<10000; ++i)
@@ -377,7 +391,7 @@ int main()
         auto strings = rec.finish();
 
         for (size_t i = 0; i < kStringsCount; i++) {
-            strings.add<Str>().addVector(kStringValue).finish();
+            strings.add<String>().addVector(kStringValue).finish();
         }
 
         SerializedData *data = strings.finish().finish();

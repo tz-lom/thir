@@ -15,8 +15,15 @@
         ANY(a)\
         ANY(b)\
     )\
-    RECORD(AVector,\
-        VECTOR_ANY(str)\
+    RECORD(Six,\
+        VECTOR_ANY(a)\
+    )\
+    RECORD(Seven, \
+        FIELD(a, i32) \
+        VECTOR_ANY(b) \
+    )\
+    RECORD(Eight, \
+        ANY_OF(a, (One) ) \
     )\
     RECORD(String,\
         STRING(str)\
@@ -24,9 +31,6 @@
     RECORD(Rec,\
         VECTOR(ids, i64)\
         VECTOR_ANY(strings)\
-    )\
-    RECORD(Str,\
-        STRING(str)\
     )
 
 
@@ -34,6 +38,7 @@
 
 GENERATE_HEADER(POD_DEFINITION)
 GENERATE_IMPLEMENTATION(POD_DEFINITION)
+
 
 
 #include "generate_undef.h"

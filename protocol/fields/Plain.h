@@ -1,7 +1,10 @@
 template <typename type>
 class Plain: public FieldType {
 public:
-    typedef type T;
+    enum {
+        staticSize = sizeof(type),
+        headerSize = 0
+    };
 
     Plain(const char *staticData, const char *dynamicData, SerializedData::hel dynamicSize):
         FieldType(staticData, dynamicData, dynamicSize){}
@@ -11,13 +14,8 @@ public:
     }
 
     const type value() const {
-        return little_to_native(*(reinterpret_cast<const type*>(staticData)));
+        return to_native(*(reinterpret_cast<const type*>(staticData)));
     }
-
-    enum {
-        staticSize = sizeof(type),
-        headerSize = 0
-    };
 
 
     template <typename Field, typename Next>
@@ -28,7 +26,7 @@ public:
         {
 
           *(reinterpret_cast<type*>(
-              constructor->staticData(Field::staticSize, fuse))) = native_to_little(value);
+              constructor->staticData(Field::staticSize, fuse))) = from_native(value);
 
           return ValueSetter<typename Next::F, typename Next::N>(constructor);
         }
