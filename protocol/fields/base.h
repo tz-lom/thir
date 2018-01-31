@@ -15,17 +15,28 @@ protected:
 };
 
 
-template <typename Field, typename Next, typename Dummy = void>
-class ValueSetter;
+template <typename Field, typename Next>
+class ValueSetter: public Field::T::template Setter<Field, Next>
+{
+public:
+    typedef Field F;
+    typedef Next N;
 
-template <typename Next>
-class ValueSetter<__Last, Next> {
-  template <typename _Field, typename _Next, typename _Dummy>
-  friend class ValueSetter;
+    ValueSetter(RecordConstructor* constructor):
+        Field::T:: template Setter<Field, Next>(constructor)
+    {}
 
+    void cancelCreation()
+    {
+        this->constructor->cancelCreation();
+    }
+};
+
+template<>
+class ValueSetter<__Last, __Last> {
  public:
   typedef __Last F;
-  typedef SerializedData* N;
+  typedef __Last N;
 
   SerializedData* finish() {
       return result;

@@ -1,5 +1,10 @@
 class VectorOfAny: public FieldType {
 public:
+    enum {
+        staticSize = 0,
+        headerSize = 1
+    };
+
     VectorOfAny(const char *staticData, const char *dynamicData, SerializedData::hel dynamicSize):
         FieldType(staticData, dynamicData, dynamicSize){}
 
@@ -37,44 +42,33 @@ public:
         return SerializedData(offset, size);
     }
 
-    enum {
-        staticSize = 0,
-        headerSize = 1
+    template <typename Field, typename Next>
+    class Setter
+    {
+    public:
+        ValueSetter<typename Next::F, typename Next::N>
+        finish()
+        {
+            constructor->nextDynamic(fuse);
+            return ValueSetter<typename Next::F, typename Next::N>(constructor);
+        }
+
+        template <typename Record>
+        typename Record::recursive add()
+        {
+            return typename Record::recursive(
+                        constructor->beginNested(
+                            Record::ID,
+                            Record::staticSize,
+                            Record::headerSize
+                            ));
+        }
+
+        Setter(RecordConstructor* constructor) : constructor(constructor), fuse(constructor->fuse()) {}
+
+    protected:
+        RecordConstructor* constructor;
+        RecordConstructor::Fuse fuse;
     };
 };
 
-template <typename Field, typename Next>
-class ValueSetter<
-        Field, Next,
-        typename enable_if<is_same<typename Field::T, VectorOfAny >::value>::type
-        //typename for_type<Field, Plain<typename Field::T::T> >::type
-        >
-{
-public:
-    typedef Field F;
-    typedef Next N;
-
-    ValueSetter<typename Next::F, typename Next::N>
-    finish()
-    {
-        constructor->nextDynamic(fuse);
-        return ValueSetter<typename Next::F, typename Next::N>(constructor);
-    }
-
-    template <typename Record>
-    typename Record::recursive add()
-    {
-        return typename Record::recursive(
-                    constructor->beginNested(
-                        Record::ID,
-                        Record::staticSize,
-                        Record::headerSize
-                        ));
-    }
-
-    ValueSetter(RecordConstructor* constructor) : constructor(constructor), fuse(constructor->fuse()) {}
-
-protected:
-    RecordConstructor* constructor;
-    RecordConstructor::Fuse fuse;
-};

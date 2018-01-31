@@ -104,6 +104,12 @@ void RecordConstructor::nextDynamic(const Fuse &fuse)
     nextDynamic();
 }
 
+void RecordConstructor::cancelCreation()
+{
+    delete data;
+    delete this;
+}
+
 void RecordConstructor::nextDynamic()
 {
     *reinterpret_cast<SerializedData::hel*>(data->data() +

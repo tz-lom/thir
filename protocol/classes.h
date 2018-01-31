@@ -154,6 +154,7 @@ public:
                                    const Fuse &fuse);
     SerializedData* finishNested(const Fuse &fuse);
 
+    void cancelCreation();
 
 protected:
     size_t order;
@@ -173,7 +174,6 @@ struct Record {
   template <typename type, typename parent>
   struct Field {
     typedef type T;
-    typedef bool isField;
 
     enum {
       staticOffset = parent::staticOffset+parent::staticSize,
