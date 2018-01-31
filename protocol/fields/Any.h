@@ -4,9 +4,9 @@ public:
         FieldType(staticData, dynamicData, dynamicSize){}
 
 
-    const SerializedData* value() const
+    const SerializedData value() const
     {
-        return new SerializedData(dynamicData, dynamicSize);
+        return SerializedData(dynamicData, dynamicSize);
     }
 
     template< typename Field > typename Field::T field() const
@@ -34,28 +34,27 @@ public:
     template <typename Record>
     typename Record::recursive beginRecursive()
     {
-        if(lock) throw SecondInitialization();
-        lock = true;
         return typename Record::recursive(
                     constructor->beginNested(
                         Record::ID,
                         Record::staticSize,
-                        Record::headerSize
+                        Record::headerSize,
+                        fuse
                         ));
     }
 
     ValueSetter<typename Next::F, typename Next::N> next()
     {
-        if(lockNext) throw SecondInitialization();
-        lockNext = true;
-        constructor->nextDynamic();
+        constructor->nextDynamic(fuse);
         return ValueSetter<typename Next::F, typename Next::N>(constructor);
     }
 
-    ValueSetter(RecordConstructor* constructor) : constructor(constructor), lock(false), lockNext(false) {}
+    ValueSetter(RecordConstructor* constructor) :
+        constructor(constructor),
+        fuse(constructor->fuse()) {}
 
 protected:
     RecordConstructor* constructor;
-    bool lock;
-    bool lockNext;
+    RecordConstructor::Fuse fuse;
+
 };

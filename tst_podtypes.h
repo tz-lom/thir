@@ -23,25 +23,93 @@ typedef int8_t   i8;
 //#include "tst_podtypes_struct.expanded.h"
 #include "tst_podtypes_struct.h"
 
-TEST(PODTypes, SimpleProtocol)
+TEST(Simple, SimpleProtocol)
 {
     SerializedData *data = One::create().set(42).finish();
     ASSERT_THAT(data->field<One::a>().value(), Eq(42));
     ASSERT_THAT(data->size(), Eq(2+4));
 
-    //ASSERT_THROW(data->field<OneBool::B>(), WrongType);
+    //ASSERT_THROW(data->field<Two::a>(), WrongType);
+    delete data;
 }
 /*
-TEST(PODVector, SimpleProtocol)
+TEST(Vector, SimpleProtocol)
 {
-    PodVector::recursive rec = PodVector::createRecursive();
-    SerializedData *data = rec.add(1).add(2).add(3).finish().finish();
-    ASSERT_EQ(data->extractVector<PodVector::vals>().size(), 3);
-    ASSERT_EQ(data->extractVector<PodVector::vals>()[0], 1);
-    ASSERT_EQ(data->extractVector<PodVector::vals>()[1], 2);
-    ASSERT_EQ(data->extractVector<PodVector::vals>()[2], 3);
+    auto data = Three::create().set(12).add(42).add(24).add(77).finish().finish();
+    ASSERT_EQ(data->field<Three::a>().value(), 12);
+    ASSERT_EQ(data->field<Three::b>().size(), 3);
+    ASSERT_EQ(data->field<Three::b>().get(0), 42);
+    ASSERT_EQ(data->field<Three::b>().get(1), 24);
+    ASSERT_EQ(data->field<Three::b>().get(2), 77);
+
+    ASSERT_THAT(data->size(), Eq(2+4+4+2*3));
+    delete data;
 }
 
+
+TEST(Vector_std, SimpleProtocol)
+{
+    std::vector<i16> source({42,24,77});
+    auto data = Three::create().set(12).addVector(source).finish().finish();
+    ASSERT_EQ(data->field<Three::a>().value(), 12);
+    ASSERT_EQ(data->field<Three::b>().size(), 3);
+    ASSERT_EQ(data->field<Three::b>().get(0), 42);
+    ASSERT_EQ(data->field<Three::b>().get(1), 24);
+    ASSERT_EQ(data->field<Three::b>().get(2), 77);
+    std::vector<i16> result = data->field<Three::b>();
+    ASSERT_EQ(result, source);
+
+    ASSERT_THAT(data->size(), Eq(2+4+4+2*3));
+    delete data;
+}
+
+TEST(Vector_combine_plain_and_std, SimpleProtocol)
+{
+    std::vector<i16> source({42,24,77});
+    auto data = Three::create()
+            .set(12)
+                .addVector(source)
+                .add(11)
+                .addVector(source)
+            .finish()
+            .finish();
+    ASSERT_EQ(data->field<Three::a>().value(), 12);
+    ASSERT_EQ(data->field<Three::b>().size(), 7);
+    std::vector<i16> result = data->field<Three::b>();
+    ASSERT_EQ(result, std::vector<i16>({42, 24, 77, 11, 42, 24, 77}));
+
+    ASSERT_EQ(data->size(), 2+4+4+2*7);
+    delete data;
+}
+
+TEST(Any, SimpleProtocol)
+{
+    auto a = Five::create();
+    a.beginRecursive<One>().set(42).finish();
+    auto data = a.next()
+            .next()
+            .finish();
+
+    ASSERT_EQ(data->field<Five::a>().field<One::a>().value(), 42);
+    ASSERT_EQ(data->field<Five::b>().value().id(), 0);
+    ASSERT_EQ(data->field<Five::b>().value().size(), 0);
+
+    ASSERT_EQ(data->size(), 2+4+4+2+4);
+
+    delete data;
+}
+
+TEST(IncompleteCreation, SimpleProtocol)
+{
+    auto a = Five::create();
+    auto b = a.beginRecursive<Three>()
+            .set(42);
+    ASSERT_THROW(a.next(), WrongCreationOrder);
+    //b.cancelCreation();
+    //delete data;
+}
+
+/*
 TEST(AnyVector, SimpleProtocol)
 {
     auto rec = AVector::create();

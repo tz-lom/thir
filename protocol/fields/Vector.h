@@ -1,3 +1,6 @@
+#include <vector>
+#include <iterator>
+
 template <typename type>
 class Vector: public FieldType {
 public:
@@ -8,6 +11,16 @@ public:
 
     size_t size() const {
         return dynamicSize/sizeof(type);
+    }
+
+    operator ::std::vector<type>() const {
+        ::std::vector<type> result(size());
+        const type* data = reinterpret_cast<const type*>(dynamicData);
+        for(int i=result.size()-1; i>=0; --i)
+        {
+            result[i] = little_to_native(data[i]);
+        }
+        return result;
     }
 
     const type get(size_t index) const {
@@ -35,18 +48,49 @@ public:
     ValueSetter<typename Next::F, typename Next::N>
     finish()
     {
-        constructor->nextDynamic();
+        constructor->nextDynamic(fuse);
         return ValueSetter<typename Next::F, typename Next::N>(constructor);
+    }
+
+/*
+    ValueSetter<Field, Next> add(const ::std::vector<typename Field::T::T> &vector)
+    {
+        typename Field::T::T* data = reinterpret_cast<typename Field::T::T*>(
+                    constructor->dynamicData(sizeof(typename Field::T::T)*vector.size())
+                    );
+
+        for(int i=vector.size()-1; i>=0; --i)
+        {
+            data[i] = native_to_little(vector[i]);
+        }
+        return ValueSetter<Field, Next>(constructor);
+    }
+*/
+    template <typename Iterable>
+    ValueSetter<Field, Next> addVector(const Iterable &container)
+    {
+        typename Iterable::const_iterator first = container.begin();
+        typename Iterable::const_iterator last = container.end();
+
+        typename Field::T::T* data = reinterpret_cast<typename Field::T::T*>(
+                    constructor->dynamicData(sizeof(typename Field::T::T)*(last-first), fuse)
+                    );
+        while(first != last)
+        {
+            *data++ = native_to_little(*first++);
+        }
+        return *this;
     }
 
     ValueSetter<Field, Next> add(typename Field::T::T value)
     {
-        *reinterpret_cast<typename Field::T::T*>(constructor->dynamicData(sizeof(typename Field::T::T))) = native_to_little(value);
-        return ValueSetter<Field, Next>(constructor);
+        *reinterpret_cast<typename Field::T::T*>(constructor->dynamicData(sizeof(typename Field::T::T), fuse)) = native_to_little(value);
+        return *this;
     }
 
-    ValueSetter(RecordConstructor* constructor) : constructor(constructor) {}
+    ValueSetter(RecordConstructor* constructor) : constructor(constructor), fuse(constructor->fuse()) {}
 
 protected:
     RecordConstructor* constructor;
+    RecordConstructor::Fuse fuse;
 };

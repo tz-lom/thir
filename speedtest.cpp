@@ -1,5 +1,20 @@
 #include <iostream>
 
+#include "protocol/classes.h"
+#include "protocol/classes.imp.h"
+#include "protocol/fields/all.h"
+
+typedef uint64_t u64;
+typedef uint32_t u32;
+typedef int64_t  i64;
+typedef int32_t  i32;
+typedef float    f32;
+typedef double   f64;
+typedef uint16_t u16;
+typedef int16_t  i16;
+typedef uint8_t  u8;
+typedef int8_t   i8;
+
 #include "tst_podtypes_struct.h"
 
 #include <vector>
@@ -355,13 +370,14 @@ int main()
     for(int i=0; i<10000; ++i)
     {
         auto rec = Rec::create();
-        for (size_t i = 0; i < kIntegers.size(); i++) {
+        /*for (size_t i = 0; i < kIntegers.size(); i++) {
             rec.add(kIntegers[i]);
-        }
+        }*/
+        rec.addVector(kIntegers);
         auto strings = rec.finish();
 
         for (size_t i = 0; i < kStringsCount; i++) {
-            strings.begin<Str>().set(kStringValue).finish();
+            strings.add<Str>().addVector(kStringValue).finish();
         }
 
         SerializedData *data = strings.finish().finish();

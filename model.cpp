@@ -5,84 +5,6 @@
 #include "protocol/fields/all.h"
 
 
-template <SerializedData::rid ValidId, typename NextCheck>
-struct IDValidator
-{
-    static bool check(SerializedData::rid id)
-    {
-        return (id==ValidId) || NextCheck::check(id);
-    }
-};
-
-template <SerializedData::rid ValidId>
-struct IDValidator<ValidId, __Last>
-{
-    static bool check(SerializedData::rid id)
-    {
-        return id==ValidId;
-    }
-};
-
-template <typename Validator>
-class AnyOf: public FieldType {
-public:
-    typedef Validator V;
-
-    AnyOf(const char* staticData, const char* dynamicData, SerializedData::hel dynamicSize):
-        FieldType(staticData, dynamicData, dynamicSize){}
-
-    template< typename Field > typename Field::T field() const
-    {
-        return SerializedData(dynamicData, dynamicSize).field<Field>();
-    }
-
-    enum {
-        staticSize = 0,
-        headerSize = 1
-    };
-};
-
-template <typename Field, typename Next>
-class ValueSetter<
-        Field, Next,
-        typename enable_if<is_same<typename Field::T, AnyOf<typename Field::T::V> >::value>::type
-        >
-{
-public:
-    typedef Field F;
-    typedef Next N;
-
-    template <typename Record>
-    typename Record::recursive beginRecursive()
-    {
-        if(!Field::T::V::check(Record::ID)) throw WrongType();
-        if(lock) throw SecondInitialization();
-        lock = true;
-        return typename Record::recursive(
-                    constructor->beginNested(
-                        Record::ID,
-                        Record::staticSize,
-                        Record::headerSize
-                        ));
-    }
-
-    ValueSetter<typename Next::F, typename Next::N> next()
-    {
-        if(lockNext) throw SecondInitialization();
-        lockNext = true;
-        constructor->nextDynamic();
-        return ValueSetter<typename Next::F, typename Next::N>(constructor);
-    }
-
-    ValueSetter(RecordConstructor* constructor) : constructor(constructor), lock(false), lockNext(false) {}
-
-protected:
-    RecordConstructor* constructor;
-    bool lock;
-    bool lockNext;
-};
-
-
 typedef uint64_t u64;
 typedef uint32_t u32;
 typedef int64_t  i64;
@@ -126,7 +48,7 @@ struct PODcontainer : Record<0 + 1, PODcontainer> {
                                                   sizeof(SerializedData::hel) +
                                               PODcontainer::staticSize);
       RecordConstructor *rc = new RecordConstructor(sd);
-      rc->beginNested(PODcontainer::ID, PODcontainer::staticSize, PODcontainer::headerSize);
+      rc->beginNested(PODcontainer::ID, PODcontainer::staticSize, PODcontainer::headerSize, 1, 1);
       return PODcontainer::recursive(rc);
     }
 };
@@ -152,7 +74,7 @@ struct OneInt : Record<0 + 2, OneInt> {
                                                   sizeof(SerializedData::hel) +
                                               staticSize);
       RecordConstructor *rc = new RecordConstructor(sd);
-      rc->beginNested(ID, staticSize, headerSize);
+      rc->beginNested(ID, staticSize, headerSize, 1, 1);
       return recursive(rc);
     }
 };
@@ -181,7 +103,7 @@ struct Arr : Record<0 + 3, Arr> {
                                                   sizeof(SerializedData::hel) +
                                               staticSize);
       RecordConstructor *rc = new RecordConstructor(sd);
-      rc->beginNested(ID, staticSize, headerSize);
+      rc->beginNested(ID, staticSize, headerSize, 1, 1);
       return recursive(rc);
     }
 };
@@ -216,8 +138,8 @@ struct Combo : Record<0 + 4, Combo> {
                                                   sizeof(SerializedData::hel) +
                                               staticSize);
       RecordConstructor *rc = new RecordConstructor(sd);
-      rc->beginNested(ID, staticSize, headerSize);
-      return recursive(rc);
+      rc->beginNested(ID, staticSize, headerSize, 1, 1);
+      return recursive(rc, 1, 1);
     }
 };
 

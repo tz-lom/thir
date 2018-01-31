@@ -51,10 +51,7 @@ struct SerializedException {};
 struct WrongType : SerializedException {};
 struct WrongIndex : SerializedException {};
 struct SecondInitialization : SerializedException {};
-
-template <typename Field, typename Next, typename Dummy = void>
-class ValueSetter;
-
+struct WrongCreationOrder: SerializedException {};
 
 
 /////////////////////////////////////////////////////////////////////
@@ -117,7 +114,7 @@ public:
                 );
     }
 
-    static const size_t __LastType;
+
 
     static size_t headerSize(rid id);
     static size_t staticSize(rid id);
@@ -129,6 +126,7 @@ protected:
 
     static const size_t headerSizes[];
     static const size_t staticSizes[];
+    static const size_t __LastType;
 
     void requireSize(size_t size);
 };
@@ -137,21 +135,35 @@ class RecordConstructor {
 public:
     RecordConstructor(SerializedData* data);
 
-    char* staticData(size_t size);
-    char* dynamicData(size_t size);
+    class Fuse {
+    public:
+        size_t level;
+        size_t order;
+    };
 
-    void nextDynamic();
+    char* staticData(size_t size, const Fuse &fuse);
+    char* dynamicData(size_t size, const Fuse &fuse);
+
+    void nextDynamic(const Fuse &fuse);
+
+    Fuse fuse();
 
     RecordConstructor* beginNested(SerializedData::rid id,
-                                 size_t staticSize,
-                                 size_t headerSize);
-    SerializedData* finishNested();
+                                   size_t staticSize,
+                                   size_t headerSize,
+                                   const Fuse &fuse);
+    SerializedData* finishNested(const Fuse &fuse);
+
 
 protected:
+    size_t order;
     SerializedData* data;
     size_t dynamicOffset;
     std::vector<size_t> staticOffset;
     std::vector<size_t> dynamicSizeOffset;
+
+    char* dynamicData(size_t size);
+    void nextDynamic();
 };
 
 template <int recordId, typename self>

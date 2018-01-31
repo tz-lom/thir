@@ -26,6 +26,7 @@ set(ProtocolFiles
     protocol/classes.h
     protocol/classes.imp.h
     protocol/fields/all.h
+    protocol/fields/base.h
     protocol/fields/Any.h
     protocol/fields/AnyOf.h
     protocol/fields/Plain.h
@@ -49,7 +50,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 set(CMAKE_CXX_STANDARD 98)
 
-add_executable(model model.cpp
-    ${ProtocolFiles}
-    )
+#add_executable(model model.cpp
+#    ${ProtocolFiles}
+#    )
 

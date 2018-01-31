@@ -187,7 +187,7 @@ Name::recursive Name::create()\
                                             sizeof(SerializedData::hel) + \
                                             staticSize); \
     RecordConstructor *rc = new RecordConstructor(sd); \
-    rc->beginNested(ID, staticSize, headerSize); \
+    rc->beginNested(ID, staticSize, headerSize, rc->fuse()); \
     return recursive(rc); \
 }\
 

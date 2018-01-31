@@ -24,13 +24,8 @@ size_t SerializedData::staticSize(SerializedData::rid id)
 }
 std::size_t SerializedData::size() const
 {
-    if (id() == 0) return 0;
-    std::size_t sz = sizeof(rid) + headerSize(id()) * sizeof(hel) + staticSizes[id()];
-    for(size_t i = headerSize(id()); i > 0; --i)
-    {
-        sz += reinterpret_cast<const hel*>(data() + sizeof(rid))[i];
-    }
-    return sz;
+    if(block) return allocated;
+    return vec.size();
 }
 
 SerializedData::SerializedData(reader readdata, void* opt)
@@ -49,7 +44,8 @@ SerializedData::SerializedData(reader readdata, void* opt)
 
     readdata(reinterpret_cast<char*>(header), sizeof(hel) * hs, opt);
     std::size_t bulkSize = staticSizes[id];
-    for (unsigned int i = 0; i < hs; ++i) {
+    for (unsigned int i = 0; i < hs; ++i)
+    {
         bulkSize += little_to_native(header[i]);
     }
 
@@ -61,15 +57,30 @@ SerializedData::SerializedData(reader readdata, void* opt)
 
 RecordConstructor::RecordConstructor(SerializedData* data)
     : data(data),
-      dynamicOffset(0)
+      dynamicOffset(0),
+      order(1)
 {
 }
 
-char* RecordConstructor::staticData(size_t size)
+RecordConstructor::Fuse RecordConstructor::fuse()
 {
+    return {staticOffset.size(), ++order};
+}
+
+
+char* RecordConstructor::staticData(size_t size, const Fuse &fuse)
+{
+    if(fuse.order != order || fuse.level != staticOffset.size()) throw WrongCreationOrder();
+
     char* ptr = data->data() + staticOffset.back();
     staticOffset.back() += size;
     return ptr;
+}
+
+char* RecordConstructor::dynamicData(size_t size, const Fuse &fuse)
+{
+    if(fuse.order != order || fuse.level != staticOffset.size()) throw WrongCreationOrder();
+    return dynamicData(size);
 }
 
 char* RecordConstructor::dynamicData(size_t size)
@@ -78,12 +89,19 @@ char* RecordConstructor::dynamicData(size_t size)
     char* ptr = data->data() + dynamicOffset;
     dynamicOffset += size;
 
-    for (std::vector<size_t>::iterator i = dynamicSizeOffset.begin();
-       i != dynamicSizeOffset.end(); ++i) {
-    *reinterpret_cast<SerializedData::hel*>(data->data() + *i) += size;
+    for (std::vector<size_t>::iterator i = dynamicSizeOffset.begin(), e = dynamicSizeOffset.end();
+       i != e; ++i)
+    {
+        *reinterpret_cast<SerializedData::hel*>(data->data() + *i) += size;
     }
 
     return ptr;
+}
+
+void RecordConstructor::nextDynamic(const Fuse &fuse)
+{
+    if(fuse.order > order || fuse.level != staticOffset.size()) throw WrongCreationOrder();
+    nextDynamic();
 }
 
 void RecordConstructor::nextDynamic()
@@ -98,8 +116,11 @@ void RecordConstructor::nextDynamic()
 
 RecordConstructor* RecordConstructor::beginNested(SerializedData::rid id,
                                                   size_t staticSize,
-                                                  size_t headerSize)
+                                                  size_t headerSize,
+                                                  const Fuse &fuse)
 {
+    if(fuse.order != order || fuse.level != staticOffset.size()) throw WrongCreationOrder();
+
     size_t nestedSize = sizeof(id) + staticSize + headerSize * sizeof(SerializedData::hel);
     char* obj = dynamicData(nestedSize);
     *reinterpret_cast<SerializedData::rid*>(obj) = native_to_little(id);
@@ -118,8 +139,10 @@ RecordConstructor* RecordConstructor::beginNested(SerializedData::rid id,
     return this;
 }
 
-SerializedData* RecordConstructor::finishNested()
+SerializedData* RecordConstructor::finishNested(const Fuse &fuse)
 {
+    if(fuse.order != order || fuse.level != staticOffset.size()) throw WrongCreationOrder();
+
     nextDynamic();
 
     staticOffset.pop_back();

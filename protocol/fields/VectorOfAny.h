@@ -57,7 +57,7 @@ public:
     ValueSetter<typename Next::F, typename Next::N>
     finish()
     {
-        constructor->nextDynamic();
+        constructor->nextDynamic(fuse);
         return ValueSetter<typename Next::F, typename Next::N>(constructor);
     }
 
@@ -72,8 +72,9 @@ public:
                         ));
     }
 
-    ValueSetter(RecordConstructor* constructor) : constructor(constructor) {}
+    ValueSetter(RecordConstructor* constructor) : constructor(constructor), fuse(constructor->fuse()) {}
 
 protected:
     RecordConstructor* constructor;
+    RecordConstructor::Fuse fuse;
 };

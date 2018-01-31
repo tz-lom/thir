@@ -18,6 +18,14 @@ public:
         staticSize = sizeof(type),
         headerSize = 0
     };
+
+
+    template <typename Field, typename Next>
+    class ValueSetter
+    {
+
+    };
+
 };
 
 template <typename Field, typename Next>
@@ -36,13 +44,14 @@ public:
     {
 
       *(reinterpret_cast<typename Field::T::T*>(
-          constructor->staticData(Field::staticSize))) = native_to_little(value);
+          constructor->staticData(Field::staticSize, fuse))) = native_to_little(value);
 
       return ValueSetter<typename Next::F, typename Next::N>(constructor);
     }
 
-    ValueSetter(RecordConstructor* constructor) : constructor(constructor) {}
+    ValueSetter(RecordConstructor* constructor) : constructor(constructor), fuse(constructor->fuse()) {}
 
 protected:
     RecordConstructor* constructor;
+    RecordConstructor::Fuse fuse;
 };
