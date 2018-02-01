@@ -25,6 +25,9 @@
     RECORD(Eight, \
         ANY_OF(a, (One)(Three) ) \
     )\
+    RECORD(Nine, \
+        VECTOR_ANY_OF(a, (One)(Three)) \
+    )\
     RECORD(String,\
         STRING(str)\
     )\

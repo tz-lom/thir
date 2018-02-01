@@ -88,7 +88,7 @@ TEST(Creation, Vector_combine_plain_and_std)
     ASSERT_EQ(result, std::vector<i16>({42, 24, 77, 11, 42, 24, 77}));
 
     ASSERT_EQ(data->size(), 2+4+4+2*7);
-    delete data;template
+    delete data;
 }
 
 TEST(Creation, Any)
@@ -211,6 +211,22 @@ TEST(Creation, AnyOf)
                   0, 0, 0, 0,       // H1.1
                   3, 0, 0, 0        //V1
               }));
+
+    delete data;
+}
+
+TEST(Creation, VectorOfAnyOf)
+{
+    auto a = Nine::create();
+    ASSERT_NO_THROW( a.add<One>().set(2).finish() );
+    ASSERT_THROW( a.add<Two>().set(2).set(3).finish(), WrongType);
+    ASSERT_NO_THROW( a.add<Three>().set(3).finish().finish() );
+
+    auto data = a.finish().finish();
+    ASSERT_EQ(data->field<Nine::a>().size(), 2);
+    ASSERT_EQ(data->field<Nine::a>().get(0).field<One::a>().value(), 2);
+    ASSERT_EQ(data->field<Nine::a>().get(1).field<Three::a>().value(), 3);
+    ASSERT_EQ(data->field<Nine::a>().get(1).field<Three::b>().size(), 0);
 
     delete data;
 }

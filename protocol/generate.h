@@ -21,6 +21,7 @@
 #define ANY_OF(name, types) (( (PROTO_NAMESPACE::AnyOf< GENERATE_ID_VALIDATOR_SEQ(types) >) )(name))
 //#define ANY_OF(name, type) (((PROTO_NAMESPACE::Any)(name))
 
+#define VECTOR_ANY_OF(name, types) (( (PROTO_NAMESPACE::VectorOfAnyOf< GENERATE_ID_VALIDATOR_SEQ(types) >) )(name))
 
 
 #define DECLARE_FIELD(r, data, descr) \

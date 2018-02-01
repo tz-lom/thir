@@ -10,5 +10,6 @@ namespace PROTO_NAMESPACE {
 
 #include "Void.h"
 #include "AnyOf.h"
+#include "VectorOfAnyOf.h"
 
 }

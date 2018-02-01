@@ -33,6 +33,7 @@ set(ProtocolFiles
     protocol/fields/Plain.h
     protocol/fields/Vector.h
     protocol/fields/VectorOfAny.h
+    protocol/fields/VectorOfAnyOf.h
     protocol/fields/Last.h
     protocol/fields/Void.h
     )
