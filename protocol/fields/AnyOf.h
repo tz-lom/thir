@@ -29,15 +29,15 @@ public:
     {
     public:
 
-        template <typename Rec>
-        typename Rec::recursive beginRecursive()
+        template <typename Record>
+        typename Record::recursive beginRecursive()
         {
-            if(!Validator::check(Rec::ID)) throw WrongType();
+            if(!Validator::check(Record::ID)) throw WrongType();
 
-            return Any::Setter<Field, Next>::template beginRecursive<Rec>();
+            return Any::Setter<Field, Next>::template beginRecursive<Record>();
         }
 
-        Setter(RecordConstructor* constructor) : Any::Setter<Field, Next>(constructor) {}
+        Setter(RC constructor) : Any::Setter<Field, Next>(constructor) {}
     };
 
 };

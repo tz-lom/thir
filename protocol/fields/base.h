@@ -22,7 +22,7 @@ public:
     typedef Field F;
     typedef Next N;
 
-    ValueSetter(RecordConstructor* constructor):
+    ValueSetter(RC constructor):
         Field::T:: template Setter<Field, Next>(constructor)
     {}
 
@@ -42,7 +42,7 @@ class ValueSetter<__Last, __Last> {
       return result;
   }
 
-  ValueSetter(RecordConstructor* constructor) {
+  ValueSetter(RC constructor) {
     result = constructor->finishNested(constructor->fuse());
   }
 

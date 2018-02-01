@@ -23,7 +23,7 @@
         VECTOR_ANY(b) \
     )\
     RECORD(Eight, \
-        ANY_OF(a, (One) ) \
+        ANY_OF(a, (One)(Three) ) \
     )\
     RECORD(String,\
         STRING(str)\

@@ -80,10 +80,10 @@ public:
             return *static_cast<ValueSetter<Field, Next>*>(this);
         }
 
-        Setter(RecordConstructor* constructor) : constructor(constructor), fuse(constructor->fuse()) {}
+        Setter(RC constructor) : constructor(constructor), fuse(constructor->fuse()) {}
 
     protected:
-        RecordConstructor* constructor;
+        RC constructor;
         RecordConstructor::Fuse fuse;
     };
 };

@@ -19,10 +19,10 @@ public:
             return ValueSetter<typename Next::F, typename Next::N>(constructor);
         }
 
-        Setter(RecordConstructor* constructor) : constructor(constructor) {}
+        Setter(RC constructor) : constructor(constructor) {}
 
     protected:
-        RecordConstructor* constructor;
+        RC constructor;
 
     };
 };

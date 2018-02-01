@@ -28,8 +28,12 @@ typedef int8_t   i8;
 
 using namespace Proto;
 
-TEST(Simple, SimpleProtocol)
+TEST(Creation, Simple)
 {
+    Proto::RecordConstructor *rc = new Proto::RecordConstructor(0);
+
+    RC a(rc);
+
     SerializedData *data = One::create().set(42).finish();
     ASSERT_THAT(data->field<One::a>().value(), Eq(42));
     ASSERT_THAT(data->size(), Eq(2+4));
@@ -38,7 +42,7 @@ TEST(Simple, SimpleProtocol)
     delete data;
 }
 
-TEST(Vector, SimpleProtocol)
+TEST(Creation, Vector)
 {
     auto data = Three::create().set(12).add(42).add(24).add(77).finish().finish();
     ASSERT_EQ(data->field<Three::a>().value(), 12);
@@ -52,7 +56,7 @@ TEST(Vector, SimpleProtocol)
 }
 
 
-TEST(Vector_std, SimpleProtocol)
+TEST(Creation, Vector_std)
 {
     std::vector<i16> source({42,24,77});
     auto data = Three::create().set(12).addVector(source).finish().finish();
@@ -68,7 +72,7 @@ TEST(Vector_std, SimpleProtocol)
     delete data;
 }
 
-TEST(Vector_combine_plain_and_std, SimpleProtocol)
+TEST(Creation, Vector_combine_plain_and_std)
 {
     std::vector<i16> source({42,24,77});
     auto data = Three::create()
@@ -84,10 +88,10 @@ TEST(Vector_combine_plain_and_std, SimpleProtocol)
     ASSERT_EQ(result, std::vector<i16>({42, 24, 77, 11, 42, 24, 77}));
 
     ASSERT_EQ(data->size(), 2+4+4+2*7);
-    delete data;
+    delete data;template
 }
 
-TEST(Any, SimpleProtocol)
+TEST(Creation, Any)
 {
     auto a = Five::create();
     a.beginRecursive<One>().set(42).finish();
@@ -104,7 +108,7 @@ TEST(Any, SimpleProtocol)
     delete data;
 }
 
-TEST(IncorrectCreation, SimpleProtocol)
+TEST(IncorrectCreation, DoubleInitializeAny)
 {
     auto a = Five::create();
     auto b = a.beginRecursive<Three>()
@@ -113,13 +117,15 @@ TEST(IncorrectCreation, SimpleProtocol)
     b.cancelCreation(); // prevent leakage
 }
 
-TEST(VectorOfAny, SimpleProtocol)
+TEST(Creation, VectorOfAny)
 {
     auto a = Six::create();
     a.add<One>().set(10).finish();
     a.add<Two>().set(11).set(12).finish();
     auto data = a.finish().finish();
 
+    auto sz = data->field<Six::a>().size();
+    ASSERT_EQ(sz, 2);
     ASSERT_EQ(data->field<Six::a>().get(0).field<One::a>().value(), 10);
     ASSERT_EQ(data->field<Six::a>().get(1).field<Two::a>().value(), 11);
     ASSERT_EQ(data->field<Six::a>().get(1).field<Two::b>().value(), 12);
@@ -128,7 +134,7 @@ TEST(VectorOfAny, SimpleProtocol)
 }
 
 
-TEST(DoubleInitialization, SimpleProtocol)
+TEST(IncorrectCreation, DoubleInitializationField)
 {
     auto a = Seven::create();
     auto b = a.set(42);
@@ -146,7 +152,7 @@ TEST(DoubleInitialization, SimpleProtocol)
     delete data;
 }
 
-TEST(SneakyDoubleInitialization, SimpleProtocol)
+TEST(IncorrectCreation, DelayedDoubleInitializationOfPlain)
 {
     auto a = Seven::create();
     auto b = a.set(42);
@@ -168,9 +174,24 @@ TEST(SneakyDoubleInitialization, SimpleProtocol)
     delete data;
 }
 
-TEST(AnyOf, SimpleProtocol)
+TEST(IncorrectCreation, CreationOfAnyWhenPreviouseIsIncomplete)
 {
+    auto a = Six::create();
+    auto b = a.add<One>();
+    ASSERT_THROW(a.add<One>(), WrongCreationOrder);
+    b.set(10).finish();
+    ASSERT_NO_THROW(a.add<One>().set(10).finish());
+    auto data = a.finish().finish();
 
+    ASSERT_EQ(data->field<Six::a>().size(), 2);
+    ASSERT_EQ(data->field<Six::a>().get(0).field<One::a>().value(), 10);
+    ASSERT_EQ(data->field<Six::a>().get(1).field<One::a>().value(), 10);
+
+    delete data;
+}
+
+TEST(Creation, AnyOf)
+{
     auto a = Eight::create();
 
     ASSERT_NO_THROW(a.beginRecursive<One>().set(2).finish());
@@ -179,7 +200,19 @@ TEST(AnyOf, SimpleProtocol)
 
     auto b = Eight::create();
     ASSERT_THROW( b.beginRecursive<Two>().set(2).set(3).finish(), WrongType);
-    b.cancelCreation();
+    ASSERT_NO_THROW(b.beginRecursive<Three>().set(3).finish().finish());
+    auto data = b.next().finish();
+    ASSERT_EQ(data->field<Eight::a>().field<Three::a>().value(), 3);
+    ASSERT_EQ(data->field<Eight::a>().field<Three::b>().size(), 0);
+    ASSERT_EQ(data->vector(), std::vector<char>({
+                  8, 0,             // ID
+                 10, 0, 0, 0,       // H1
+                  3, 0,              // ID
+                  0, 0, 0, 0,       // H1.1
+                  3, 0, 0, 0        //V1
+              }));
+
+    delete data;
 }
 
 /*

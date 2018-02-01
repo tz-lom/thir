@@ -26,13 +26,13 @@ public:
         template <typename Record>
         typename Record::recursive beginRecursive()
         {
-            return typename Record::recursive(
-                        constructor->beginNested(
-                            Record::ID,
-                            Record::staticSize,
-                            Record::headerSize,
-                            fuse
-                            ));
+            constructor->beginNested(
+                Record::ID,
+                Record::staticSize,
+                Record::headerSize,
+                fuse
+                );
+            return typename Record::recursive(constructor);
         }
 
         ValueSetter<typename Next::F, typename Next::N> next()
@@ -41,12 +41,12 @@ public:
             return ValueSetter<typename Next::F, typename Next::N>(constructor);
         }
 
-        Setter(RecordConstructor* constructor) :
+        Setter(RC constructor) :
             constructor(constructor),
             fuse(constructor->fuse()) {}
 
     protected:
-        RecordConstructor* constructor;
+        RC constructor;
         RecordConstructor::Fuse fuse;
 
     };

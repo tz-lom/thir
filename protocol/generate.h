@@ -183,7 +183,7 @@ Name::recursive Name::create()\
                                             staticSize); \
     PROTO_NAMESPACE::RecordConstructor *rc = new PROTO_NAMESPACE::RecordConstructor(sd); \
     rc->beginNested(ID, staticSize, headerSize, {0,0}); \
-    return recursive(rc); \
+    return recursive(PROTO_NAMESPACE::RC(rc)); \
 }\
 
 #define GENERATE_CONSTRUCTORS(r, data, i , Record) \

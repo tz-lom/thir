@@ -111,7 +111,6 @@ void RecordConstructor::nextDynamic(const Fuse &fuse)
 void RecordConstructor::cancelCreation()
 {
     delete data;
-    delete this;
 }
 
 void RecordConstructor::nextDynamic()
@@ -124,10 +123,10 @@ void RecordConstructor::nextDynamic()
 }
 
 
-RecordConstructor* RecordConstructor::beginNested(SerializedData::rid id,
-                                                  size_t staticSize,
-                                                  size_t headerSize,
-                                                  const Fuse &fuse)
+void RecordConstructor::beginNested(SerializedData::rid id,
+                                  size_t staticSize,
+                                  size_t headerSize,
+                                  const Fuse &fuse)
 {
     if(fuse.order != 0 && (fuse.order != order.back() || fuse.level != staticOffset.size())) throw WrongCreationOrder();
 
@@ -146,8 +145,6 @@ RecordConstructor* RecordConstructor::beginNested(SerializedData::rid id,
     order.push_back(1);
     staticOffset.push_back(sOffset);
     dynamicSizeOffset.push_back(hOffset);
-
-    return this;
 }
 
 SerializedData* RecordConstructor::finishNested(const Fuse &fuse)
@@ -161,10 +158,6 @@ SerializedData* RecordConstructor::finishNested(const Fuse &fuse)
     dynamicSizeOffset.pop_back();
 
     SerializedData *data = this->data;
-    if(staticOffset.size()==0)
-    {
-        delete this;
-    }
 
     return data;
 }

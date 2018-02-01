@@ -8,37 +8,63 @@ public:
     VectorOfAny(const char *staticData, const char *dynamicData, SerializedData::hel dynamicSize):
         FieldType(staticData, dynamicData, dynamicSize){}
 
-    const SerializedData get(size_t index) const {
-        if(dynamicSize==0) throw WrongIndex();
+    size_t size() const {
+        if(dynamicSize == 0) return 0;
 
         const char* offset = dynamicData;
+        const char* end = dynamicData+dynamicSize;
 
-        for(size_t i = index; i>0; --i)
+        size_t result = 0;
+        while(offset<end)
         {
-            if(offset-dynamicData + sizeof(SerializedData::rid) > dynamicSize) throw WrongIndex();
+            if(offset + sizeof(SerializedData::rid) > end) throw WrongIndex(); // @todo: throw broken structure
             SerializedData::rid id = to_native(*reinterpret_cast<const SerializedData::rid*>(offset));
             offset += sizeof(SerializedData::rid);
             const SerializedData::hel *headers = reinterpret_cast<const SerializedData::hel*>(offset);
             offset += SerializedData::headerSize(id)*sizeof(SerializedData::hel) + SerializedData::staticSize(id);
-            if(offset-dynamicData >= dynamicSize) throw WrongIndex(); // @todo: actually it is broken structure, maybe throw that instead?
+            if(offset > end) throw WrongIndex(); // @todo: actually it is broken structure, maybe throw that instead?
+            for( size_t i = SerializedData::headerSize(id); i>0; --i, headers++)
+            {
+                offset += to_native(*headers);
+            }
+            result ++;
+        }
+        return result;
+    }
+
+    const SerializedData get(size_t index) const {
+        if(dynamicSize==0) throw WrongIndex();
+
+        const char* offset = dynamicData;
+        const char* end = dynamicData+dynamicSize;
+
+
+        for(size_t i = index; i>0; --i)
+        {
+            if(offset + sizeof(SerializedData::rid) > end) throw WrongIndex();
+            SerializedData::rid id = to_native(*reinterpret_cast<const SerializedData::rid*>(offset));
+            offset += sizeof(SerializedData::rid);
+            const SerializedData::hel *headers = reinterpret_cast<const SerializedData::hel*>(offset);
+            offset += SerializedData::headerSize(id)*sizeof(SerializedData::hel) + SerializedData::staticSize(id);
+            if(offset > end) throw WrongIndex(); // @todo: actually it is broken structure, maybe throw that instead?
             for( size_t i = SerializedData::headerSize(id); i>0; --i, headers++)
             {
                 offset += to_native(*headers);
             }
         }
-        if(offset-dynamicData + sizeof(SerializedData::rid) > dynamicSize) throw WrongIndex();
+        if(offset + sizeof(SerializedData::rid) > end) throw WrongIndex();
         // extract size of the record
 
         SerializedData::rid id = to_native(*reinterpret_cast<const SerializedData::rid*>(offset));
         size_t size = sizeof(SerializedData::rid);
         const SerializedData::hel *headers = reinterpret_cast<const SerializedData::hel*>(offset+size);
         size += SerializedData::headerSize(id)*sizeof(SerializedData::hel) + SerializedData::staticSize(id);
-        if(offset-dynamicData + size > dynamicSize) throw WrongIndex(); // @todo: actually it is broken structure, maybe throw that instead?
+        if(offset + size > end) throw WrongIndex(); // @todo: actually it is broken structure, maybe throw that instead?
         for( size_t i = SerializedData::headerSize(id); i>0; --i, headers++)
         {
             size += to_native(*headers);
         }
-        if(offset-dynamicData + size > dynamicSize) throw WrongIndex(); // @todo: actually it is broken structure, maybe throw that instead?
+        if(offset + size > end) throw WrongIndex(); // @todo: actually it is broken structure, maybe throw that instead?
         return SerializedData(offset, size);
     }
 
@@ -56,19 +82,19 @@ public:
         template <typename Record>
         typename Record::recursive add()
         {
-            return typename Record::recursive(
-                        constructor->beginNested(
-                            Record::ID,
-                            Record::staticSize,
-                            Record::headerSize,
-                            fuse
-                            ));
+            constructor->beginNested(
+                Record::ID,
+                Record::staticSize,
+                Record::headerSize,
+                fuse
+                );
+            return typename Record::recursive(constructor);
         }
 
-        Setter(RecordConstructor* constructor) : constructor(constructor), fuse(constructor->fuse()) {}
+        Setter(RC constructor) : constructor(constructor), fuse(constructor->fuse()) {}
 
     protected:
-        RecordConstructor* constructor;
+        RC constructor;
         RecordConstructor::Fuse fuse;
     };
 };

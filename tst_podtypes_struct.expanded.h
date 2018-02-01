@@ -98,10 +98,12 @@ struct Seven : PROTO_NAMESPACE::Record<6 + 1, Seven> {
   static recursive create();
 };
 struct Eight : PROTO_NAMESPACE::Record<7 + 1, Eight> {
-  struct a : Field<PROTO_NAMESPACE::AnyOf<
-                       PROTO_NAMESPACE::IDValidator<One::ID,
-                                                    PROTO_NAMESPACE::__Last> >,
-                   PROTO_NAMESPACE::First> {};
+  struct a
+      : Field<PROTO_NAMESPACE::AnyOf<PROTO_NAMESPACE::IDValidator<
+                  Three::ID,
+                  PROTO_NAMESPACE::IDValidator<One::ID,
+                                               PROTO_NAMESPACE::__Last> > >,
+              PROTO_NAMESPACE::First> {};
   enum { headerSize = 0 + a::headerSize, staticSize = 0 + a::staticSize };
   typedef PROTO_NAMESPACE::ValueSetter<
       Eight::a,
@@ -143,7 +145,7 @@ One::recursive One::create() {
   PROTO_NAMESPACE::RecordConstructor* rc =
       new PROTO_NAMESPACE::RecordConstructor(sd);
   rc->beginNested(ID, staticSize, headerSize, {0, 0});
-  return recursive(rc);
+  return recursive(PROTO_NAMESPACE::RC(rc));
 }
 Two::recursive Two::create() {
   PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
@@ -152,7 +154,7 @@ Two::recursive Two::create() {
   PROTO_NAMESPACE::RecordConstructor* rc =
       new PROTO_NAMESPACE::RecordConstructor(sd);
   rc->beginNested(ID, staticSize, headerSize, {0, 0});
-  return recursive(rc);
+  return recursive(PROTO_NAMESPACE::RC(rc));
 }
 Three::recursive Three::create() {
   PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
@@ -161,7 +163,7 @@ Three::recursive Three::create() {
   PROTO_NAMESPACE::RecordConstructor* rc =
       new PROTO_NAMESPACE::RecordConstructor(sd);
   rc->beginNested(ID, staticSize, headerSize, {0, 0});
-  return recursive(rc);
+  return recursive(PROTO_NAMESPACE::RC(rc));
 }
 Four::recursive Four::create() {
   PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
@@ -170,7 +172,7 @@ Four::recursive Four::create() {
   PROTO_NAMESPACE::RecordConstructor* rc =
       new PROTO_NAMESPACE::RecordConstructor(sd);
   rc->beginNested(ID, staticSize, headerSize, {0, 0});
-  return recursive(rc);
+  return recursive(PROTO_NAMESPACE::RC(rc));
 }
 Five::recursive Five::create() {
   PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
@@ -179,7 +181,7 @@ Five::recursive Five::create() {
   PROTO_NAMESPACE::RecordConstructor* rc =
       new PROTO_NAMESPACE::RecordConstructor(sd);
   rc->beginNested(ID, staticSize, headerSize, {0, 0});
-  return recursive(rc);
+  return recursive(PROTO_NAMESPACE::RC(rc));
 }
 Six::recursive Six::create() {
   PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
@@ -188,7 +190,7 @@ Six::recursive Six::create() {
   PROTO_NAMESPACE::RecordConstructor* rc =
       new PROTO_NAMESPACE::RecordConstructor(sd);
   rc->beginNested(ID, staticSize, headerSize, {0, 0});
-  return recursive(rc);
+  return recursive(PROTO_NAMESPACE::RC(rc));
 }
 Seven::recursive Seven::create() {
   PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
@@ -197,7 +199,7 @@ Seven::recursive Seven::create() {
   PROTO_NAMESPACE::RecordConstructor* rc =
       new PROTO_NAMESPACE::RecordConstructor(sd);
   rc->beginNested(ID, staticSize, headerSize, {0, 0});
-  return recursive(rc);
+  return recursive(PROTO_NAMESPACE::RC(rc));
 }
 Eight::recursive Eight::create() {
   PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
@@ -206,7 +208,7 @@ Eight::recursive Eight::create() {
   PROTO_NAMESPACE::RecordConstructor* rc =
       new PROTO_NAMESPACE::RecordConstructor(sd);
   rc->beginNested(ID, staticSize, headerSize, {0, 0});
-  return recursive(rc);
+  return recursive(PROTO_NAMESPACE::RC(rc));
 }
 String::recursive String::create() {
   PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
@@ -215,7 +217,7 @@ String::recursive String::create() {
   PROTO_NAMESPACE::RecordConstructor* rc =
       new PROTO_NAMESPACE::RecordConstructor(sd);
   rc->beginNested(ID, staticSize, headerSize, {0, 0});
-  return recursive(rc);
+  return recursive(PROTO_NAMESPACE::RC(rc));
 }
 Rec::recursive Rec::create() {
   PROTO_NAMESPACE::SerializedData* sd = new PROTO_NAMESPACE::SerializedData(
@@ -224,7 +226,7 @@ Rec::recursive Rec::create() {
   PROTO_NAMESPACE::RecordConstructor* rc =
       new PROTO_NAMESPACE::RecordConstructor(sd);
   rc->beginNested(ID, staticSize, headerSize, {0, 0});
-  return recursive(rc);
+  return recursive(PROTO_NAMESPACE::RC(rc));
 }
 const size_t PROTO_NAMESPACE::SerializedData::headerSizes[] = {
     0,

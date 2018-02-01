@@ -22,20 +22,33 @@ public:
     class Setter
     {
     public:
-        ValueSetter<typename Next::F, typename Next::N> set(const type value)
+
+        void update(const type value)
         {
-
-          *(reinterpret_cast<type*>(
-              constructor->staticData(Field::staticSize, fuse))) = from_native(value);
-
-          return ValueSetter<typename Next::F, typename Next::N>(constructor);
+            *field = from_native(value);
         }
 
-        Setter(RecordConstructor* constructor) : constructor(constructor), fuse(constructor->fuse()) {}
+        ValueSetter<typename Next::F, typename Next::N> set(const type value)
+        {
+            if(block) throw WrongCreationOrder();
+            *field = from_native(value);
+            block = true;
+
+            return ValueSetter<typename Next::F, typename Next::N>(constructor);
+        }
+
+        Setter(RC constructor) :
+            constructor(constructor),
+            fuse(constructor->fuse()),
+            block(false),
+            field(reinterpret_cast<type*>(constructor->staticData(Field::staticSize, fuse)))
+        {}
 
     protected:
-        RecordConstructor* constructor;
+        RC constructor;
         RecordConstructor::Fuse fuse;
+        bool block;
+        type *field;
     };
 
 };

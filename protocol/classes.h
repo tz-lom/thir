@@ -15,6 +15,8 @@
 #include <stdint.h>
 #include <boost/endian/conversion.hpp>
 
+#include <boost/shared_ptr.hpp>
+
 namespace PROTO_NAMESPACE {
 
 using namespace ::boost::endian;
@@ -120,6 +122,14 @@ public:
       }
     }
 
+    inline std::vector<char> vector() {
+        if(block == nullptr) {
+            return vec;
+        } else {
+            return std::vector<char>(block, block+allocated);
+        }
+    }
+
     inline rid id() const {
       if (allocated == 0)
         return 0;
@@ -165,6 +175,9 @@ protected:
     void requireSize(size_t size);
 };
 
+class RecordConstructor;
+typedef ::boost::shared_ptr<RecordConstructor> RC;
+
 class RecordConstructor {
 public:
     RecordConstructor(SerializedData* data);
@@ -182,10 +195,10 @@ public:
 
     Fuse fuse();
 
-    RecordConstructor* beginNested(SerializedData::rid id,
-                                   size_t staticSize,
-                                   size_t headerSize,
-                                   const Fuse &fuse);
+    void beginNested(SerializedData::rid id,
+                   size_t staticSize,
+                   size_t headerSize,
+                   const Fuse &fuse);
     SerializedData* finishNested(const Fuse &fuse);
 
     void cancelCreation();
