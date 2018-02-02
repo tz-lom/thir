@@ -3,5 +3,5 @@
 #include "protocol/classes.imp.h"
 
 #include "generate.h"
-GENERATE_IMPLEMENTATION(POD_DEFINITION)
+GENERATE_IMPLEMENTATION(MAIN_DEFINITION)
 

@@ -45,6 +45,7 @@ set(TestFiles
     structures.cpp
     test_binary_little_endian.h
     test_binary_big_endian.h
+    test_parallel_definitions.h
     )
 
 include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include ${CMAKE_CURRENT_SOURCE_DIR}/protocol)

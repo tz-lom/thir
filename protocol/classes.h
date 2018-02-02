@@ -14,6 +14,7 @@
 #include <vector>
 #include <stdint.h>
 #include <boost/endian/conversion.hpp>
+#include <boost/preprocessor/cat.hpp>
 
 #if __cplusplus < 201103L
 #  include <boost/shared_ptr.hpp>
@@ -29,19 +30,17 @@ using namespace ::boost::endian;
 #define nullptr (0)
 #endif
 
-#define PPCAT_NX(A, B) A ## B
-#define PPCAT(A, B) PPCAT_NX(A, B)
 
 template <class EndianReversible >
 inline EndianReversible  to_native(EndianReversible  x)
 {
-    return PPCAT(PROTO_SEND_ENDIAN, _to_native)(x);
+    return BOOST_PP_CAT(PROTO_SEND_ENDIAN, _to_native)(x);
 }
 
 template <class EndianReversible >
 inline EndianReversible  from_native(EndianReversible  x)
 {
-    return PPCAT(native_to_, PROTO_SEND_ENDIAN)(x);
+    return BOOST_PP_CAT(native_to_, PROTO_SEND_ENDIAN)(x);
 }
 
 template<>
@@ -68,9 +67,6 @@ inline float from_native(float x)
 {
     return x;
 }
-
-#undef PPCAT
-#undef PPCAT_NX
 
 
 struct First {

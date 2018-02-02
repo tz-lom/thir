@@ -16,7 +16,7 @@ typedef int16_t  i16;
 typedef uint8_t  u8;
 typedef int8_t   i8;
 
-#define POD_DEFINITION \
+#define MAIN_DEFINITION \
     RECORD(One, \
         FIELD(a, i32) \
     )\
@@ -57,7 +57,7 @@ typedef int8_t   i8;
 
 #include "generate.h"
 
-GENERATE_HEADER(POD_DEFINITION)
+GENERATE_HEADER(MAIN_DEFINITION)
 
 #include "generate_undef.h"
 
