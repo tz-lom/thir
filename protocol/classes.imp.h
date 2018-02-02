@@ -104,7 +104,6 @@ void RecordConstructor::nextDynamic(const Fuse &fuse)
 {
     if(fuse.order != order.back() || fuse.level != staticOffset.size()) throw WrongCreationOrder();
 
-    order.back()++;
     nextDynamic();
 }
 
@@ -115,11 +114,13 @@ void RecordConstructor::cancelCreation()
 
 void RecordConstructor::nextDynamic()
 {
+    order.back()++;
     *reinterpret_cast<SerializedData::hel*>(data->data() +
                                           dynamicSizeOffset.back()) =
       from_native(*reinterpret_cast<SerializedData::hel*>(
           data->data() + dynamicSizeOffset.back()));
     dynamicSizeOffset.back() += sizeof(SerializedData::hel);
+    requiredFinish.back() = false;
 }
 
 
@@ -129,6 +130,7 @@ void RecordConstructor::beginNested(SerializedData::rid id,
                                   const Fuse &fuse)
 {
     if(fuse.order != 0 && (fuse.order != order.back() || fuse.level != staticOffset.size())) throw WrongCreationOrder();
+
 
     size_t nestedSize = sizeof(id) + staticSize + headerSize * sizeof(SerializedData::hel);
     char* obj = dynamicData(nestedSize);
@@ -145,17 +147,22 @@ void RecordConstructor::beginNested(SerializedData::rid id,
     order.push_back(1);
     staticOffset.push_back(sOffset);
     dynamicSizeOffset.push_back(hOffset);
+    requiredFinish.push_back(headerSize>0);
 }
 
 SerializedData* RecordConstructor::finishNested(const Fuse &fuse)
 {
     if(fuse.order != order.back() || fuse.level != staticOffset.size()) throw WrongCreationOrder();
 
-    nextDynamic();
+    if(requiredFinish.back())
+    {
+        nextDynamic();
+    }
 
     order.pop_back();
     staticOffset.pop_back();
     dynamicSizeOffset.pop_back();
+    requiredFinish.pop_back();
 
     SerializedData *data = this->data;
 

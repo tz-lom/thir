@@ -1,2 +1,2 @@
 #!/bin/bash
-g++ -E -DCOMLIB_EXPORTS -Iprotocol tst_podtypes_struct.h | awk '!/^# /' | clang-format -style=Chromium > tst_podtypes_struct.expanded.h
+{ echo '#pragma once'; g++ -E -Iprotocol structures.h | awk '!/^# /' | clang-format -style=Chromium; }> structures.expanded.h

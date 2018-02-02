@@ -15,7 +15,11 @@
 #include <stdint.h>
 #include <boost/endian/conversion.hpp>
 
-#include <boost/shared_ptr.hpp>
+#if __cplusplus < 201103L
+#  include <boost/shared_ptr.hpp>
+#else
+#  include <memory>
+#endif
 
 namespace PROTO_NAMESPACE {
 
@@ -176,7 +180,11 @@ protected:
 };
 
 class RecordConstructor;
+#if __cplusplus < 201103L
 typedef ::boost::shared_ptr<RecordConstructor> RC;
+#else
+typedef ::std::shared_ptr<RecordConstructor> RC;
+#endif
 
 class RecordConstructor {
 public:
@@ -209,6 +217,7 @@ protected:
     std::vector<size_t> staticOffset;
     std::vector<size_t> dynamicSizeOffset;
     std::vector<size_t> order;
+    std::vector<bool> requiredFinish;
 
     char* dynamicData(size_t size);
     void nextDynamic();

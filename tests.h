@@ -4,36 +4,17 @@
 using namespace testing;
 
 
-#include "protocol/classes.h"
-#include "protocol/classes.imp.h"
-#include "protocol/fields/all.h"
-
-typedef uint64_t u64;
-typedef uint32_t u32;
-typedef int64_t  i64;
-typedef int32_t  i32;
-typedef float    f32;
-typedef double   f64;
-typedef uint16_t u16;
-typedef int16_t  i16;
-typedef uint8_t  u8;
-typedef int8_t   i8;
-
 //#define PRECOMPILED
 #ifdef PRECOMPILED
-#  include "tst_podtypes_struct.expanded.h"
+#  include "structures.expanded.h"
 #else
-#  include "tst_podtypes_struct.h"
+#  include "structures.h"
 #endif
 
 using namespace Proto;
 
 TEST(Creation, Simple)
 {
-    Proto::RecordConstructor *rc = new Proto::RecordConstructor(0);
-
-    RC a(rc);
-
     SerializedData *data = One::create().set(42).finish();
     ASSERT_THAT(data->field<One::a>().value(), Eq(42));
     ASSERT_THAT(data->size(), Eq(2+4));
@@ -44,7 +25,13 @@ TEST(Creation, Simple)
 
 TEST(Creation, Vector)
 {
-    auto data = Three::create().set(12).add(42).add(24).add(77).finish().finish();
+    auto data = Three::create()
+            .set(12)
+            .add(42)
+            .add(24)
+            .add(77)
+            .finish()
+            .finish();
     ASSERT_EQ(data->field<Three::a>().value(), 12);
     ASSERT_EQ(data->field<Three::b>().size(), 3);
     ASSERT_EQ(data->field<Three::b>().get(0), 42);
@@ -204,14 +191,14 @@ TEST(Creation, AnyOf)
     auto data = b.next().finish();
     ASSERT_EQ(data->field<Eight::a>().field<Three::a>().value(), 3);
     ASSERT_EQ(data->field<Eight::a>().field<Three::b>().size(), 0);
-    ASSERT_EQ(data->vector(), std::vector<char>({
+    /*ASSERT_EQ(data->vector(), std::vector<char>({
                   8, 0,             // ID
                  10, 0, 0, 0,       // H1
-                  3, 0,              // ID
+                  3, 0,             // ID1
                   0, 0, 0, 0,       // H1.1
-                  3, 0, 0, 0        //V1
+                  3, 0, 0, 0        // V1.1
               }));
-
+*/
     delete data;
 }
 

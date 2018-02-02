@@ -38,26 +38,35 @@ set(ProtocolFiles
     protocol/fields/Void.h
     )
 
+set(TestFiles
+    main.cpp
+    tests.h
+    structures.h
+    structures.cpp
+    test_binary_little_endian.h
+    test_binary_big_endian.h
+    )
+
 include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include ${CMAKE_CURRENT_SOURCE_DIR}/protocol)
-add_executable(tests_little main.cpp tst_podtypes.h
-    tst_podtypes_struct.h
-    tst_podtypes_struct.expanded.h
+add_executable(tests_little
+    ${TestFiles}
     ${ProtocolFiles}
-               ${GTestSrc}/src/gtest-all.cc
-               ${GMockSrc}/src/gmock-all.cc)
+    ${GTestSrc}/src/gtest-all.cc
+    ${GMockSrc}/src/gmock-all.cc
+    )
 target_compile_definitions(tests_little PRIVATE PROTO_SEND_ENDIAN=little)
 add_test(${PROJECT_NAME} COMMAND tests_little)
 target_link_libraries(tests_little PRIVATE Threads::Threads)
 
-#add_executable(tests_big main.cpp tst_podtypes.h
-#    tst_podtypes_struct.h
-#    tst_podtypes_struct.expanded.h
-#    ${ProtocolFiles}
-#               ${GTestSrc}/src/gtest-all.cc
-#               ${GMockSrc}/src/gmock-all.cc)
-#target_compile_definitions(tests_big PRIVATE PROTO_SEND_ENDIAN=big)
-#add_test(${PROJECT_NAME} COMMAND tests_big)
-#target_link_libraries(tests_big PRIVATE Threads::Threads)
+add_executable(tests_big
+    ${TestFiles}
+    ${ProtocolFiles}
+    ${GTestSrc}/src/gtest-all.cc
+    ${GMockSrc}/src/gmock-all.cc
+    )
+target_compile_definitions(tests_big PRIVATE PROTO_SEND_ENDIAN=big)
+add_test(${PROJECT_NAME} COMMAND tests_big)
+target_link_libraries(tests_big PRIVATE Threads::Threads)
 
 #add_executable(speedTest speedtest.cpp)
 
