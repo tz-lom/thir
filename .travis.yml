@@ -4,8 +4,9 @@ compiler:
   - clang
   - gcc
 
-install:
-  - sudo apt-get install libboost-dev
+addons: 
+  apt: 
+    packages: libboost-all-dev
 
 script: 
   - mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . && ./tests_big && ./tests_little
