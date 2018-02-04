@@ -1,5 +1,6 @@
 #include <vector>
 #include <stdint.h>
+#include <cstddef>
 #include <boost/endian/conversion.hpp>
 
 #if __cplusplus < 201103L

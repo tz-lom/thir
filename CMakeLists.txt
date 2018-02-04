@@ -48,6 +48,7 @@ set(TestFiles
     )
 
 include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include ${CMAKE_CURRENT_SOURCE_DIR})
+
 add_executable(tests_little
     ${TestFiles}
     ${ProtocolFiles}
