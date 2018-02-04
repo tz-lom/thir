@@ -70,9 +70,5 @@ target_link_libraries(tests_big PRIVATE Threads::Threads)
 
 #add_executable(speedTest speedtest.cpp)
 
-set(CMAKE_CXX_STANDARD 98)
 
-#add_executable(model model.cpp
-#    ${ProtocolFiles}
-#    )
 
