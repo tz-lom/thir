@@ -1,7 +1,6 @@
 #include <boost/preprocessor/comparison/greater.hpp>
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/list.hpp>
-#include <boost/preprocessor/punctuation/remove_parens.hpp>
 #include <boost/preprocessor/cat.hpp>
 
 // Thir settings
