@@ -1,3 +1,5 @@
+THIR_NAMESPACE_OPEN
+
 class FieldType
 {
 public:
@@ -49,3 +51,5 @@ class ValueSetter<__Last, __Last> {
  protected:
   SerializedData* result;
 };
+
+THIR_NAMESPACE_CLOSE

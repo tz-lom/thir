@@ -1,3 +1,5 @@
+THIR_NAMESPACE_OPEN
+
 class Void: public FieldType {
 public:
 
@@ -27,3 +29,4 @@ public:
     };
 };
 
+THIR_NAMESPACE_CLOSE

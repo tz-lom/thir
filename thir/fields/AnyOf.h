@@ -1,4 +1,4 @@
-
+THIR_NAMESPACE_OPEN
 
 template <SerializedData::rid ValidId, typename NextCheck>
 struct IDValidator
@@ -41,3 +41,5 @@ public:
     };
 
 };
+
+THIR_NAMESPACE_CLOSE

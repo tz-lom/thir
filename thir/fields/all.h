@@ -1,15 +1,10 @@
-namespace PROTO_NAMESPACE {
-
 #include "base.h"
-#include "Last.h"
 
-#include "Any.h"
+#include "Void.h"
 #include "Plain.h"
+#include "Any.h"
 #include "Vector.h"
 #include "VectorOfAny.h"
 
-#include "Void.h"
 #include "AnyOf.h"
 #include "VectorOfAnyOf.h"
-
-}

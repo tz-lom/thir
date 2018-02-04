@@ -1,7 +1,7 @@
 #include "structures.h"
 
-#include "protocol/classes.imp.h"
+#include <thir/generate.h>
+#include <thir/classes.imp.h>
 
-#include "generate.h"
-GENERATE_IMPLEMENTATION(MAIN_DEFINITION)
+THIR_GENERATE_IMPLEMENTATION(MAIN_DEFINITION)
 

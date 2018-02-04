@@ -1,2 +1,2 @@
 #!/bin/bash
-{ echo '#pragma once'; g++ -E -Iprotocol structures.h | awk '!/^# /' | clang-format -style=Chromium; }> structures.expanded.h
+{ echo '#pragma once'; g++ -std=gnu++98 -E -I./ structures.h | awk '!/^# /' | clang-format -style=Chromium; }> structures.expanded.h

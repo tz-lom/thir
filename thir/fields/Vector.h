@@ -1,3 +1,4 @@
+THIR_NAMESPACE_OPEN
 
 template <typename type>
 class Vector: public FieldType {
@@ -44,26 +45,15 @@ public:
             return ValueSetter<typename Next::F, typename Next::N>(constructor);
         }
 
-    /*
-        ValueSetter<Field, Next> add(const ::std::vector<typename Field::T::T> &vector)
-        {
-            typename Field::T::T* data = reinterpret_cast<typename Field::T::T*>(
-                        constructor->dynamicData(sizeof(typename Field::T::T)*vector.size())
-                        );
-
-            for(int i=vector.size()-1; i>=0; --i)
-            {
-                data[i] = from_native(vector[i]);
-            }
-            return ValueSetter<Field, Next>(constructor);
-        }
-    */
         template <typename Iterable>
         ValueSetter<Field, Next> addVector(const Iterable &container)
         {
-            typename Iterable::const_iterator first = container.begin();
-            typename Iterable::const_iterator last = container.end();
+            return add(container.begin(), container.end());
+        }
 
+        template <typename Iterator>
+        ValueSetter<Field, Next> add(Iterator first, Iterator last)
+        {
             type* data = reinterpret_cast<type*>(
                         constructor->dynamicData(sizeof(type)*(last-first), fuse)
                         );
@@ -88,3 +78,4 @@ public:
     };
 };
 
+THIR_NAMESPACE_CLOSE

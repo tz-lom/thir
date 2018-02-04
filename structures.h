@@ -2,8 +2,9 @@
 #define TESTS_MAIN_STRUCTURES
 
 
-#include "protocol/classes.h"
-#include "protocol/fields/all.h"
+#include <thir/generate.h>
+#include <thir/classes.h>
+#include <thir/fields/all.h>
 
 typedef uint64_t u64;
 typedef uint32_t u32;
@@ -46,6 +47,9 @@ typedef int8_t   i8;
     RECORD(Nine, \
         VECTOR_ANY_OF(a, (One)(Three)) \
     )\
+    RECORD(Ten, \
+        EMPTY()\
+    )\
     RECORD(String,\
         STRING(str)\
     )\
@@ -54,11 +58,8 @@ typedef int8_t   i8;
         VECTOR_ANY(strings)\
     )
 
+THIR_GENERATE_HEADER(MAIN_DEFINITION)
 
-#include "generate.h"
-
-GENERATE_HEADER(MAIN_DEFINITION)
-
-#include "generate_undef.h"
+#include <thir/undef.h>
 
 #endif

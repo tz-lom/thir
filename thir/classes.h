@@ -1,20 +1,6 @@
-#ifndef PROTO_DYNAMIC_SIZE_TYPE
-#  define PROTO_DYNAMIC_SIZE_TYPE uint32_t
-#endif
-#ifndef PROTO_ID_TYPE
-#  define PROTO_ID_TYPE uint16_t
-#endif
-#ifndef PROTO_NAMESPACE
-#  define PROTO_NAMESPACE Proto
-#endif
-#ifndef PROTO_SEND_ENDIAN
-#  define PROTO_SEND_ENDIAN little
-#endif
-
 #include <vector>
 #include <stdint.h>
 #include <boost/endian/conversion.hpp>
-#include <boost/preprocessor/cat.hpp>
 
 #if __cplusplus < 201103L
 #  include <boost/shared_ptr.hpp>
@@ -22,7 +8,7 @@
 #  include <memory>
 #endif
 
-namespace PROTO_NAMESPACE {
+THIR_NAMESPACE_OPEN
 
 using namespace ::boost::endian;
 
@@ -34,13 +20,13 @@ using namespace ::boost::endian;
 template <class EndianReversible >
 inline EndianReversible  to_native(EndianReversible  x)
 {
-    return BOOST_PP_CAT(PROTO_SEND_ENDIAN, _to_native)(x);
+    return BOOST_PP_CAT(THIR_SEND_ENDIAN, _to_native)(x);
 }
 
 template <class EndianReversible >
 inline EndianReversible  from_native(EndianReversible  x)
 {
-    return BOOST_PP_CAT(native_to_, PROTO_SEND_ENDIAN)(x);
+    return BOOST_PP_CAT(native_to_, THIR_SEND_ENDIAN)(x);
 }
 
 template<>
@@ -97,8 +83,8 @@ class SerializedData
 {
     friend class RecordConstructor;
 public:
-    typedef PROTO_ID_TYPE rid;
-    typedef PROTO_DYNAMIC_SIZE_TYPE hel;
+    typedef THIR_ID_TYPE rid;
+    typedef THIR_DYNAMIC_SIZE_TYPE hel;
 
     typedef void (*reader)(char* memory, size_t size, void* opt);
 
@@ -188,6 +174,8 @@ public:
 
     class Fuse {
     public:
+        Fuse(size_t level, size_t order);
+
         size_t level;
         size_t order;
     };
@@ -239,4 +227,4 @@ struct Record {
   };
 };
 
-}
+THIR_NAMESPACE_CLOSE

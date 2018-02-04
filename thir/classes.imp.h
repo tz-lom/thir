@@ -1,4 +1,4 @@
-namespace PROTO_NAMESPACE {
+THIR_NAMESPACE_OPEN
 
 SerializedData::SerializedData(size_t allocate)
     : block(nullptr), allocated(allocate), vec(allocate) {}
@@ -57,6 +57,12 @@ SerializedData::SerializedData(reader readdata, void* opt)
     readdata(data() + sizeof(rid) + sizeof(hel) * hs, bulkSize, opt);
 }
 
+RecordConstructor::Fuse::Fuse(size_t level, size_t order):
+    level(level),
+    order(order)
+{
+}
+
 RecordConstructor::RecordConstructor(SerializedData* data)
     : data(data),
       dynamicOffset(0)
@@ -65,7 +71,7 @@ RecordConstructor::RecordConstructor(SerializedData* data)
 
 RecordConstructor::Fuse RecordConstructor::fuse()
 {
-    return {staticOffset.size(), order.back()};
+    return Fuse(staticOffset.size(), order.back());
 }
 
 
@@ -169,4 +175,4 @@ SerializedData* RecordConstructor::finishNested(const Fuse &fuse)
     return data;
 }
 
-}
+THIR_NAMESPACE_CLOSE

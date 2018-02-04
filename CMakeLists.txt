@@ -1,6 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 98)
 
 
 PROJECT(simpleProtocol
@@ -22,20 +22,19 @@ else ()
 endif ()
 
 set(ProtocolFiles
-    protocol/generate.h
-    protocol/generate_undef.h
-    protocol/classes.h
-    protocol/classes.imp.h
-    protocol/fields/all.h
-    protocol/fields/base.h
-    protocol/fields/Any.h
-    protocol/fields/AnyOf.h
-    protocol/fields/Plain.h
-    protocol/fields/Vector.h
-    protocol/fields/VectorOfAny.h
-    protocol/fields/VectorOfAnyOf.h
-    protocol/fields/Last.h
-    protocol/fields/Void.h
+    thir/generate.h
+    thir/undef.h
+    thir/classes.h
+    thir/classes.imp.h
+    thir/fields/all.h
+    thir/fields/base.h
+    thir/fields/Any.h
+    thir/fields/AnyOf.h
+    thir/fields/Plain.h
+    thir/fields/Vector.h
+    thir/fields/VectorOfAny.h
+    thir/fields/VectorOfAnyOf.h
+    thir/fields/Void.h
     )
 
 set(TestFiles
@@ -48,14 +47,14 @@ set(TestFiles
     test_parallel_definitions.h
     )
 
-include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include ${CMAKE_CURRENT_SOURCE_DIR}/protocol)
+include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(tests_little
     ${TestFiles}
     ${ProtocolFiles}
     ${GTestSrc}/src/gtest-all.cc
     ${GMockSrc}/src/gmock-all.cc
     )
-target_compile_definitions(tests_little PRIVATE PROTO_SEND_ENDIAN=little)
+target_compile_definitions(tests_little PRIVATE THIR_SEND_ENDIAN=little)
 add_test(${PROJECT_NAME} COMMAND tests_little)
 target_link_libraries(tests_little PRIVATE Threads::Threads)
 
@@ -65,7 +64,7 @@ add_executable(tests_big
     ${GTestSrc}/src/gtest-all.cc
     ${GMockSrc}/src/gmock-all.cc
     )
-target_compile_definitions(tests_big PRIVATE PROTO_SEND_ENDIAN=big)
+target_compile_definitions(tests_big PRIVATE THIR_SEND_ENDIAN=big)
 add_test(${PROJECT_NAME} COMMAND tests_big)
 target_link_libraries(tests_big PRIVATE Threads::Threads)
 

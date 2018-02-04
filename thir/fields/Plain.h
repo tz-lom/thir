@@ -1,3 +1,5 @@
+THIR_NAMESPACE_OPEN
+
 template <typename type>
 class Plain: public FieldType {
 public:
@@ -53,3 +55,4 @@ public:
 
 };
 
+THIR_NAMESPACE_CLOSE

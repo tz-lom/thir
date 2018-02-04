@@ -1,3 +1,5 @@
+THIR_NAMESPACE_OPEN
+
 class Any: public FieldType {
 public:
     enum {
@@ -52,3 +54,4 @@ public:
     };
 };
 
+THIR_NAMESPACE_CLOSE

@@ -1,3 +1,5 @@
+THIR_NAMESPACE_OPEN
+
 template<typename Validator>
 class VectorOfAnyOf: public VectorOfAny {
 public:
@@ -22,3 +24,4 @@ public:
     };
 };
 
+THIR_NAMESPACE_CLOSE
