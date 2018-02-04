@@ -6,30 +6,6 @@ SerializedData::SerializedData(size_t allocate)
 SerializedData::SerializedData(const char* block, size_t allocate)
     : block(const_cast<char*>(block)), allocated(allocate), vec() {}
 
-void SerializedData::requireSize(size_t size)
-{
-    if (block) throw SerializedException();
-    vec.resize(size);
-    allocated = size;
-}
-
-inline size_t SerializedData::headerSize(rid id)
-{
-    if (id < 1 || id > __LastType) throw WrongType();
-    return headerSizes[id];
-}
-
-size_t SerializedData::staticSize(SerializedData::rid id)
-{
-    if (id < 1 || id > __LastType) throw WrongType();
-    return staticSizes[id];
-}
-std::size_t SerializedData::size() const
-{
-    if(block) return allocated;
-    return vec.size();
-}
-
 SerializedData::SerializedData(reader readdata, void* opt)
     : block(nullptr), allocated(sizeof(rid)), vec(allocated)
 {

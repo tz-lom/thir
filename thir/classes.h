@@ -122,7 +122,10 @@ public:
       return to_native(*(reinterpret_cast<const rid*>(data())));
     }
 
-    std::size_t size() const;
+    inline std::size_t size() const {
+        if(block) return allocated;
+        return vec.size();
+    }
 
     template< typename Field > typename Field::T field() const
     {
@@ -144,10 +147,15 @@ public:
                 );
     }
 
+    inline static size_t headerSize(rid id) {
+        if (id < 1 || id > __LastType) throw WrongType();
+        return headerSizes[id];
+    }
 
-
-    static size_t headerSize(rid id);
-    static size_t staticSize(rid id);
+    inline static size_t staticSize(rid id) {
+        if (id < 1 || id > __LastType) throw WrongType();
+        return staticSizes[id];
+    }
 
 protected:
     char* block;
@@ -158,7 +166,11 @@ protected:
     static const size_t staticSizes[];
     static const size_t __LastType;
 
-    void requireSize(size_t size);
+    inline void requireSize(size_t size) {
+        if (block) throw SerializedException();
+        vec.resize(size);
+        allocated = size;
+    }
 };
 
 class RecordConstructor;

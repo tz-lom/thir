@@ -48,8 +48,6 @@ TEST(Creation, Vector_std)
     i16 sourceData[] = {42,24,77};
     std::vector<i16> source(&sourceData[0], &sourceData[sizeof(sourceData)/sizeof(sourceData[0])]);
 
-    std::cout << source.size();
-
     SerializedData* data = Three::create().set(12).addVector(source).finish().finish();
     ASSERT_EQ(data->field<Three::a>().value(), 12);
     ASSERT_EQ(data->field<Three::b>().size(), 3);

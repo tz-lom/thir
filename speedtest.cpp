@@ -1,21 +1,6 @@
 #include <iostream>
 
-#include "protocol/classes.h"
-#include "protocol/classes.imp.h"
-#include "protocol/fields/all.h"
-
-typedef uint64_t u64;
-typedef uint32_t u32;
-typedef int64_t  i64;
-typedef int32_t  i32;
-typedef float    f32;
-typedef double   f64;
-typedef uint16_t u16;
-typedef int16_t  i16;
-typedef uint8_t  u8;
-typedef int8_t   i8;
-
-#include "tst_podtypes_struct.expanded.h"
+#include "structures.h"
 
 #include <vector>
 #include <string>
@@ -364,16 +349,7 @@ const std::vector<int64_t> kIntegers = {
 };
 
 
-/*
-template< auto Type, typename NextCheck>
-struct IDValidator
-{
-    static bool check(SerializedData::rid id)
-    {
-        return (id==Type::ID) || NextCheck::check(id);
-    }
-};
-*/
+using namespace Thir;
 
 
 int main()

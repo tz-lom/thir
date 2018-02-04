@@ -68,7 +68,8 @@ target_compile_definitions(tests_big PRIVATE THIR_SEND_ENDIAN=big)
 add_test(${PROJECT_NAME} COMMAND tests_big)
 target_link_libraries(tests_big PRIVATE Threads::Threads)
 
-#add_executable(speedTest speedtest.cpp)
+#set(CMAKE_CXX_STANDARD 11)
+#add_executable(speedTest speedtest.cpp structures.cpp)
 
 
 
