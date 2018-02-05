@@ -1,7 +1,6 @@
 #include <vector>
 #include <stdint.h>
 #include <cstddef>
-#include <boost/endian/conversion.hpp>
 
 #if __cplusplus < 201103L
 #  include <boost/shared_ptr.hpp>
@@ -214,7 +213,9 @@ protected:
     std::vector<size_t> staticOffset;
     std::vector<size_t> dynamicSizeOffset;
     std::vector<size_t> order;
+#ifdef THIR_PRIV_ENDCONV_ENABLE
     std::vector<bool> requiredFinish;
+#endif
 
     char* dynamicData(size_t size);
     void nextDynamic();

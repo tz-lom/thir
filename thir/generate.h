@@ -2,6 +2,8 @@
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/list.hpp>
 #include <boost/preprocessor/cat.hpp>
+#include <boost/endian/conversion.hpp>
+
 
 // Thir settings
 #ifndef THIR_DYNAMIC_SIZE_TYPE
@@ -21,6 +23,27 @@
 #  define THIR_AUTO_SEND_ENDIAN
 #endif
 
+
+#ifdef THIR_PRIV_ENDCONV_ENABLE
+#  undef THIR_PRIV_ENDCONV_ENABLE
+#endif
+
+#define THIR_PRIV_END_little 1
+#define THIR_PRIV_END_big 2
+
+#define THIR_PRIV_ENDIAN_TEST BOOST_PP_CAT(THIR_PRIV_END_, THIR_SEND_ENDIAN)
+
+#ifdef BOOST_LITTLE_ENDIAN
+#  if THIR_PRIV_ENDIAN_TEST != 1
+#    define THIR_PRIV_ENDCONV_ENABLE
+#  endif
+#endif
+
+#ifdef BOOST_BIG_ENDIAN
+#  if THIR_PRIV_ENDIAN_TEST != 2
+#    define THIR_PRIV_ENDCONV_ENABLE
+#  endif
+#endif
 
 
 #define RECORD(name, Fields) ((name)()(Fields))

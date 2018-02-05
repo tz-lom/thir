@@ -43,6 +43,12 @@ RecordConstructor::RecordConstructor(SerializedData* data)
     : data(data),
       dynamicOffset(0)
 {
+    order.reserve(8);
+    staticOffset.reserve(8);
+    dynamicSizeOffset.reserve(8);
+#ifdef THIR_PRIV_ENDCONV_ENABLE
+    requiredFinish.reserve(8);
+#endif
 }
 
 RecordConstructor::Fuse RecordConstructor::fuse()
@@ -102,7 +108,9 @@ void RecordConstructor::nextDynamic()
       from_native(*reinterpret_cast<SerializedData::hel*>(
           data->data() + dynamicSizeOffset.back()));
     dynamicSizeOffset.back() += sizeof(SerializedData::hel);
+#ifdef THIR_PRIV_ENDCONV_ENABLE
     requiredFinish.back() = false;
+#endif
 }
 
 
@@ -120,8 +128,7 @@ void RecordConstructor::beginNested(SerializedData::rid id,
 
     SerializedData::hel* dyn =
       reinterpret_cast<SerializedData::hel*>(obj + sizeof(SerializedData::rid));
-    for (size_t j = headerSize; j > 0; --j, ++dyn)
-        *dyn = 0;
+    memset(dyn, headerSize, 0);
 
     size_t hOffset = sizeof(id) + static_cast<size_t>(obj - data->data());
     size_t sOffset = hOffset + headerSize * sizeof(SerializedData::hel);
@@ -129,22 +136,28 @@ void RecordConstructor::beginNested(SerializedData::rid id,
     order.push_back(1);
     staticOffset.push_back(sOffset);
     dynamicSizeOffset.push_back(hOffset);
+#ifdef THIR_PRIV_ENDCONV_ENABLE
     requiredFinish.push_back(headerSize>0);
+#endif
 }
 
 SerializedData* RecordConstructor::finishNested(const Fuse &fuse)
 {
     if(fuse.order != order.back() || fuse.level != staticOffset.size()) throw WrongCreationOrder();
 
+#ifdef THIR_PRIV_ENDCONV_ENABLE
     if(requiredFinish.back())
     {
         nextDynamic();
     }
+#endif
 
     order.pop_back();
     staticOffset.pop_back();
     dynamicSizeOffset.pop_back();
+#ifdef THIR_PRIV_ENDCONV_ENABLE
     requiredFinish.pop_back();
+#endif
 
     SerializedData *data = this->data;
 
