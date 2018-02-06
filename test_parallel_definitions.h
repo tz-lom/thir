@@ -28,12 +28,9 @@ THIR_GENERATE_IMPLEMENTATION(SECOND_DEFINITION)
 
 TEST(Paralel, BothDefinitions)
 {
-    Thir::SerializedData* data_a = One::create().set(42).finish();
-    Parallel::SerializedData* data_b = Foo::create().set(-112).finish();
+    Thir::SD data_a = One::create().set(42).finish();
+    Parallel::SD data_b = Foo::create().set(-112).finish();
 
     ASSERT_EQ(data_a->field<One::a>().value(), 42);
     ASSERT_EQ(data_b->field<Foo::a>().value(), -112);
-
-    delete data_a;
-    delete data_b;
 }

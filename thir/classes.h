@@ -13,7 +13,9 @@ THIR_NAMESPACE_OPEN
 using namespace ::boost::endian;
 
 #if __cplusplus < 201103L
-#define nullptr (0)
+#  ifndef nullptr
+#    define nullptr (0)
+#  endif
 #endif
 
 
@@ -176,8 +178,10 @@ protected:
 class RecordConstructor;
 #if __cplusplus < 201103L
 typedef ::boost::shared_ptr<RecordConstructor> RC;
+typedef ::boost::shared_ptr<SerializedData> SD;
 #else
 typedef ::std::shared_ptr<RecordConstructor> RC;
+typedef ::std::shared_ptr<SerializedData> SD;
 #endif
 
 class RecordConstructor {
@@ -203,12 +207,10 @@ public:
                    size_t staticSize,
                    size_t headerSize,
                    const Fuse &fuse);
-    SerializedData* finishNested(const Fuse &fuse);
-
-    void cancelCreation();
+    SD finishNested(const Fuse &fuse);
 
 protected:
-    SerializedData* data;
+    SD data;
     size_t dynamicOffset;
     std::vector<size_t> staticOffset;
     std::vector<size_t> dynamicSizeOffset;

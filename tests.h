@@ -15,17 +15,16 @@ using namespace Thir;
 
 TEST(Creation, Simple)
 {
-    SerializedData *data = One::create().set(42).finish();
+    SD data = One::create().set(42).finish();
     ASSERT_THAT(data->field<One::a>().value(), Eq(42));
     ASSERT_THAT(data->size(), Eq(2+4));
 
     ASSERT_THROW(data->field<Two::a>(), WrongType);
-    delete data;
 }
 
 TEST(Creation, Vector)
 {
-    SerializedData* data = Three::create()
+    SD data = Three::create()
             .set(12)
             .add(42)
             .add(24)
@@ -39,7 +38,6 @@ TEST(Creation, Vector)
     ASSERT_EQ(data->field<Three::b>().get(2), 77);
 
     ASSERT_THAT(data->size(), Eq(2+4+4+2*3));
-    delete data;
 }
 
 
@@ -48,7 +46,7 @@ TEST(Creation, Vector_std)
     i16 sourceData[] = {42,24,77};
     std::vector<i16> source(&sourceData[0], &sourceData[sizeof(sourceData)/sizeof(sourceData[0])]);
 
-    SerializedData* data = Three::create().set(12).addVector(source).finish().finish();
+    SD data = Three::create().set(12).addVector(source).finish().finish();
     ASSERT_EQ(data->field<Three::a>().value(), 12);
     ASSERT_EQ(data->field<Three::b>().size(), 3);
     ASSERT_EQ(data->field<Three::b>().get(0), 42);
@@ -58,7 +56,6 @@ TEST(Creation, Vector_std)
     ASSERT_EQ(result, source);
 
     ASSERT_THAT(data->size(), Eq(2+4+4+2*3));
-    delete data;
 }
 
 TEST(Creation, Vector_combine_plain_and_std)
@@ -66,7 +63,7 @@ TEST(Creation, Vector_combine_plain_and_std)
     i16 sourceData[] = {42,24,77};
     std::vector<i16> source(&sourceData[0], &sourceData[sizeof(sourceData)/sizeof(sourceData[0])]);
 
-    SerializedData* data = Three::create()
+    SD data = Three::create()
             .set(12)
                 .addVector(source)
                 .add(11)
@@ -84,14 +81,13 @@ TEST(Creation, Vector_combine_plain_and_std)
     ASSERT_EQ( (::std::vector<i16>)data->field<Three::b>(), result);
 
     ASSERT_EQ(data->size(), 2+4+4+2*7);
-    delete data;
 }
 
 TEST(Creation, Any)
 {
     Five::recursive a = Five::create();
     a.beginRecursive<One>().set(42).finish();
-    SerializedData* data = a.next()
+    SD data = a.next()
             .next()
             .finish();
 
@@ -100,8 +96,6 @@ TEST(Creation, Any)
     ASSERT_EQ(data->field<Five::b>().value().size(), 0);
 
     ASSERT_EQ(data->size(), 2+4+4+2+4);
-
-    delete data;
 }
 
 TEST(IncorrectCreation, DoubleInitializeAny)
@@ -110,7 +104,7 @@ TEST(IncorrectCreation, DoubleInitializeAny)
     Three::recursive::N b = a.beginRecursive<Three>()
             .set(42);
     ASSERT_THROW(a.next(), WrongCreationOrder);
-    b.cancelCreation(); // prevent leakage
+    //b.cancelCreation(); // prevent leakage
 }
 
 TEST(Creation, VectorOfAny)
@@ -118,15 +112,13 @@ TEST(Creation, VectorOfAny)
     Six::recursive a = Six::create();
     a.add<One>().set(10).finish();
     a.add<Two>().set(11).set(12).finish();
-    SerializedData* data = a.finish().finish();
+    SD data = a.finish().finish();
 
     size_t sz = data->field<Six::a>().size();
     ASSERT_EQ(sz, 2);
     ASSERT_EQ(data->field<Six::a>().get(0).field<One::a>().value(), 10);
     ASSERT_EQ(data->field<Six::a>().get(1).field<Two::a>().value(), 11);
     ASSERT_EQ(data->field<Six::a>().get(1).field<Two::b>().value(), 12);
-
-    delete data;
 }
 
 
@@ -138,14 +130,12 @@ TEST(IncorrectCreation, DoubleInitializationField)
     b.add<One>().set(10).finish();
     b.add<Two>().set(11).set(12).finish();
     ASSERT_THROW(a.set(1), WrongCreationOrder);
-    SerializedData* data = b.finish().finish();
+    SD data = b.finish().finish();
 
     ASSERT_EQ(data->field<Seven::a>().value(), 42);
     ASSERT_EQ(data->field<Seven::b>().get(0).field<One::a>().value(), 10);
     ASSERT_EQ(data->field<Seven::b>().get(1).field<Two::a>().value(), 11);
     ASSERT_EQ(data->field<Seven::b>().get(1).field<Two::b>().value(), 12);
-
-    delete data;
 }
 
 TEST(IncorrectCreation, DelayedDoubleInitializationOfPlain)
@@ -160,14 +150,12 @@ TEST(IncorrectCreation, DelayedDoubleInitializationOfPlain)
     ASSERT_THROW(c.set(1), WrongCreationOrder);
     d.set(11).set(12).finish();
     ASSERT_THROW(a.set(1), WrongCreationOrder);
-    SerializedData* data = b.finish().finish();
+    SD data = b.finish().finish();
 
     ASSERT_EQ(data->field<Seven::a>().value(), 42);
     ASSERT_EQ(data->field<Seven::b>().get(0).field<One::a>().value(), 10);
     ASSERT_EQ(data->field<Seven::b>().get(1).field<Two::a>().value(), 11);
     ASSERT_EQ(data->field<Seven::b>().get(1).field<Two::b>().value(), 12);
-
-    delete data;
 }
 
 TEST(IncorrectCreation, CreationOfAnyWhenPreviouseIsIncomplete)
@@ -177,13 +165,11 @@ TEST(IncorrectCreation, CreationOfAnyWhenPreviouseIsIncomplete)
     ASSERT_THROW(a.add<One>(), WrongCreationOrder);
     b.set(10).finish();
     ASSERT_NO_THROW(a.add<One>().set(10).finish());
-    SerializedData* data = a.finish().finish();
+    SD data = a.finish().finish();
 
     ASSERT_EQ(data->field<Six::a>().size(), 2);
     ASSERT_EQ(data->field<Six::a>().get(0).field<One::a>().value(), 10);
     ASSERT_EQ(data->field<Six::a>().get(1).field<One::a>().value(), 10);
-
-    delete data;
 }
 
 TEST(Creation, AnyOf)
@@ -191,16 +177,15 @@ TEST(Creation, AnyOf)
     Eight::recursive a = Eight::create();
 
     ASSERT_NO_THROW(a.beginRecursive<One>().set(2).finish());
-    delete a.next().finish();
+    a.next().finish();
 
 
     Eight::recursive b = Eight::create();
     ASSERT_THROW( b.beginRecursive<Two>().set(2).set(3).finish(), WrongType);
     ASSERT_NO_THROW(b.beginRecursive<Three>().set(3).finish().finish());
-    SerializedData* data = b.next().finish();
+    SD data = b.next().finish();
     ASSERT_EQ(data->field<Eight::a>().field<Three::a>().value(), 3);
     ASSERT_EQ(data->field<Eight::a>().field<Three::b>().size(), 0);
-    delete data;
 }
 
 TEST(Creation, VectorOfAnyOf)
@@ -210,19 +195,16 @@ TEST(Creation, VectorOfAnyOf)
     ASSERT_THROW( a.add<Two>().set(2).set(3).finish(), WrongType);
     ASSERT_NO_THROW( a.add<Three>().set(3).finish().finish() );
 
-    SerializedData* data = a.finish().finish();
+    SD data = a.finish().finish();
     ASSERT_EQ(data->field<Nine::a>().size(), 2);
     ASSERT_EQ(data->field<Nine::a>().get(0).field<One::a>().value(), 2);
     ASSERT_EQ(data->field<Nine::a>().get(1).field<Three::a>().value(), 3);
     ASSERT_EQ(data->field<Nine::a>().get(1).field<Three::b>().size(), 0);
-
-    delete data;
 }
 
 TEST(Creation, Empty)
 {
-    SerializedData* data = Ten::create().next().finish();
+    SD data = Ten::create().next().finish();
     ASSERT_EQ(data->id(), Ten::ID);
-    delete data;
 }
 

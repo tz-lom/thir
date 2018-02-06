@@ -27,11 +27,6 @@ public:
     ValueSetter(RC constructor):
         Field::T:: template Setter<Field, Next>(constructor)
     {}
-
-    void cancelCreation()
-    {
-        this->constructor->cancelCreation();
-    }
 };
 
 template<>
@@ -40,7 +35,7 @@ class ValueSetter<__Last, __Last> {
   typedef __Last F;
   typedef __Last N;
 
-  SerializedData* finish() {
+  SD finish() {
       return result;
   }
 
@@ -49,7 +44,7 @@ class ValueSetter<__Last, __Last> {
   }
 
  protected:
-  SerializedData* result;
+  SD result;
 };
 
 THIR_NAMESPACE_CLOSE

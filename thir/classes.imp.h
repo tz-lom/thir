@@ -95,11 +95,6 @@ void RecordConstructor::nextDynamic(const Fuse &fuse)
     nextDynamic();
 }
 
-void RecordConstructor::cancelCreation()
-{
-    delete data;
-}
-
 void RecordConstructor::nextDynamic()
 {
     order.back()++;
@@ -141,7 +136,7 @@ void RecordConstructor::beginNested(SerializedData::rid id,
 #endif
 }
 
-SerializedData* RecordConstructor::finishNested(const Fuse &fuse)
+SD RecordConstructor::finishNested(const Fuse &fuse)
 {
     if(fuse.order != order.back() || fuse.level != staticOffset.size()) throw WrongCreationOrder();
 
@@ -158,8 +153,6 @@ SerializedData* RecordConstructor::finishNested(const Fuse &fuse)
 #ifdef THIR_PRIV_ENDCONV_ENABLE
     requiredFinish.pop_back();
 #endif
-
-    SerializedData *data = this->data;
 
     return data;
 }

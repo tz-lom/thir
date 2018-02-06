@@ -13,10 +13,9 @@ TEST(Binary, Simple)
             "\x01\x00"
             "\x2A\x00\x00\x00";
 
-    SerializedData* data = One::create().set(42).finish();
+    SD data = One::create().set(42).finish();
     ASSERT_EQ(data->vector(),
               std::vector<char>(&binary[0], &binary[sizeof(binary)-1]));
-    delete data;
 }
 
 TEST(Binary, AnyOf)
@@ -30,11 +29,10 @@ TEST(Binary, AnyOf)
 
     Eight::recursive a = Eight::create();
     a.beginRecursive<Three>().set(3).finish().finish();
-    SerializedData* data = a.next().finish();
+    SD data = a.next().finish();
 
     ASSERT_EQ(data->vector(),
               std::vector<char>(&binary[0], &binary[sizeof(binary)-1]));
-    delete data;
 }
 
 TEST(Binary, Empty)
@@ -43,11 +41,10 @@ TEST(Binary, Empty)
             "\x0A\x00"
             ;
 
-    SerializedData* data = Ten::create().next().finish();
+    SD data = Ten::create().next().finish();
 
     ASSERT_EQ(data->vector(),
               std::vector<char>(&binary[0], &binary[sizeof(binary)-1]));
-    delete data;
 }
 /*
 TEST(Binary, Vector)
