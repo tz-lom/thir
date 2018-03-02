@@ -208,3 +208,42 @@ TEST(Creation, Empty)
     ASSERT_EQ(data->id(), Ten::ID);
 }
 
+TEST(Creation, SetAny)
+{
+    SD arrow = One::create().set(42).finish();
+    SD target = Five::create().next().set(arrow).finish();
+
+    ASSERT_EQ(target->field<Five::a>().value().id(), 0);
+    ASSERT_EQ(target->field<Five::b>().value().id(), One::ID);
+    ASSERT_EQ(target->field<Five::b>().field<One::a>(), 42);
+}
+
+TEST(Creation, SetAnyOf)
+{
+    SD arrow = One::create().set(42).finish();
+    SD wrong = Two::create().set(42).set(42).finish();
+
+    SD target;
+    ASSERT_NO_THROW(target = Eight::create().set(arrow).finish());
+
+    ASSERT_THROW(Eight::create().set(wrong).finish(), WrongType);
+
+    ASSERT_EQ(target->field<Eight::a>().value().id(), One::ID);
+    ASSERT_EQ(target->field<Eight::a>().field<One::a>(), 42);
+}
+
+TEST(Creation, VectorSet)
+{
+    i16 sourceData[] = {42,24,77};
+    std::vector<i16> source(&sourceData[0], &sourceData[sizeof(sourceData)/sizeof(sourceData[0])]);
+
+    SD data = Three::create()
+            .set(12)
+            .set(source)
+            .finish();
+    ASSERT_EQ(data->field<Three::a>().value(), 12);
+    ASSERT_EQ(data->field<Three::b>().size(), source.size());
+
+    ASSERT_EQ( (::std::vector<i16>)data->field<Three::b>(), source);
+}
+

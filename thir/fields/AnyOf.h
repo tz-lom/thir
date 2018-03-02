@@ -29,6 +29,16 @@ public:
     {
     public:
 
+        ValueSetter<typename Next::F, typename Next::N> set(SD serialized)
+        {
+            if(!Validator::check(serialized->id())) throw WrongType();
+
+            char *data = this->constructor->dynamicData(serialized->size(), this->fuse);
+            memcpy(data, serialized->data(), serialized->size());
+
+            return ValueSetter<typename Next::F, typename Next::N>(this->constructor);
+        }
+
         template <typename Record>
         typename Record::recursive beginRecursive()
         {

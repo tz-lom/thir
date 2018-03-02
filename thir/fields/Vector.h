@@ -46,6 +46,20 @@ public:
         }
 
         template <typename Iterable>
+        ValueSetter<typename Next::F, typename Next::N>
+        set(const Iterable &container)
+        {
+            return addVector(container).finish();
+        }
+
+        template <typename Iterator>
+        ValueSetter<typename Next::F, typename Next::N>
+        set(Iterator first, Iterator last)
+        {
+            return add(first, last).finish();
+        }
+
+        template <typename Iterable>
         ValueSetter<Field, Next> addVector(const Iterable &container)
         {
             return add(container.begin(), container.end());

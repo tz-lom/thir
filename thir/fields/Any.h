@@ -42,6 +42,15 @@ public:
             constructor->nextDynamic(fuse);
             return ValueSetter<typename Next::F, typename Next::N>(constructor);
         }
+        
+        ValueSetter<typename Next::F, typename Next::N> set(SD serialized)
+        {
+            char *data = constructor->dynamicData(serialized->size(), fuse);
+            memcpy(data, serialized->data(), serialized->size());
+            constructor->nextDynamic(fuse);
+
+            return ValueSetter<typename Next::F, typename Next::N>(constructor);            
+        }
 
         Setter(RC constructor) :
             constructor(constructor),
