@@ -70,6 +70,30 @@ public:
         return SerializedData(offset, size);
     }
 
+    std::vector<SerializedData> toVector() {
+        std::vector<SerializedData> result;
+
+        const char* offset = dynamicData;
+        const char* end = dynamicData+dynamicSize;
+
+        while(offset<end)
+        {
+            const char *begin = offset;
+            if(offset + sizeof(SerializedData::rid) > end) throw WrongIndex(); // @todo: throw broken structure
+            SerializedData::rid id = to_native(*reinterpret_cast<const SerializedData::rid*>(offset));
+            offset += sizeof(SerializedData::rid);
+            const SerializedData::hel *headers = reinterpret_cast<const SerializedData::hel*>(offset);
+            offset += SerializedData::headerSize(id)*sizeof(SerializedData::hel) + SerializedData::staticSize(id);
+            if(offset > end) throw WrongIndex(); // @todo: actually it is broken structure, maybe throw that instead?
+            for( size_t i = SerializedData::headerSize(id); i>0; --i, headers++)
+            {
+                offset += to_native(*headers);
+            }
+            result.push_back(SerializedData(begin, offset-begin));
+        }
+        return result;
+    }
+
     template <typename Field, typename Next>
     class Setter
     {

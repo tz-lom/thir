@@ -16,6 +16,10 @@ public:
     }
 
     operator ::std::vector<type>() const {
+        return toVector();
+    }
+
+    ::std::vector<type> toVector() const {
         ::std::vector<type> result(size());
         const type* data = reinterpret_cast<const type*>(dynamicData);
         for(int i=result.size()-1; i>=0; --i)
@@ -91,5 +95,6 @@ public:
         RecordConstructor::Fuse fuse;
     };
 };
+
 
 THIR_NAMESPACE_CLOSE

@@ -3,8 +3,15 @@ THIR_NAMESPACE_OPEN
 SerializedData::SerializedData(size_t allocate)
     : block(nullptr), allocated(allocate), vec(allocate) {}
 
-SerializedData::SerializedData(const char* block, size_t allocate)
-    : block(const_cast<char*>(block)), allocated(allocate), vec() {}
+SerializedData::SerializedData(const char* block, size_t allocate, bool copy)
+    : block(const_cast<char*>(block)), allocated(allocate)
+{
+    if(copy)
+    {
+        this->block = nullptr;
+        vec = std::vector<char>(block, block+allocate);
+    }
+}
 
 SerializedData::SerializedData(reader readdata, void* opt)
     : block(nullptr), allocated(sizeof(rid)), vec(allocated)

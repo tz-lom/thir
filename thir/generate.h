@@ -2,7 +2,6 @@
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/list.hpp>
 #include <boost/preprocessor/cat.hpp>
-#include <boost/endian/conversion.hpp>
 
 
 // Thir settings
@@ -52,7 +51,7 @@
 #define VECTOR(name, type) (( (THIR_NS::Vector<type>) )(name))
 #define ANY(name) (( (THIR_NS::Any) )(name))
 #define EMPTY()    (( (THIR_NS::Void) )(__void))
-#define STRING(name) VECTOR(name, char)
+#define STRING(name) (( (THIR_NS::String) )(name))
 #define VECTOR_ANY(name) (( (THIR_NS::VectorOfAny) )(name))
 #define ANY_OF(name, types) (( (THIR_NS::AnyOf< THIR_PRIV_GEN_ID_VALIDATOR_SEQ(types) >) )(name))
 #define VECTOR_ANY_OF(name, types) (( (THIR_NS::VectorOfAnyOf< THIR_PRIV_GEN_ID_VALIDATOR_SEQ(types) >) )(name))
@@ -65,7 +64,7 @@
 #define THIR_NAMESPACE_CLOSE_CODE(s, state, x)  }
 #define THIR_NAMESPACE_CLOSE BOOST_PP_SEQ_FOR_EACH(THIR_NAMESPACE_CLOSE_CODE, ,THIR_NAMESPACE)
 
-#define THIR_NAMESPACE_DECLARE(r, state, x) BOOST_PP_CAT(state, ::x)
+#define THIR_NAMESPACE_DECLARE(r, state, x) state :: x
 #define THIR_NS BOOST_PP_SEQ_FOLD_LEFT(THIR_NAMESPACE_DECLARE, ,THIR_NAMESPACE)
 
 #define EXP_I(r, data, x) BOOST_PP_COMMA() x

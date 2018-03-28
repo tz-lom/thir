@@ -10,10 +10,19 @@ public:
     Any(const char *staticData, const char *dynamicData, SerializedData::hel dynamicSize):
         FieldType(staticData, dynamicData, dynamicSize){}
 
+    operator const SerializedData() const {
+        return value();
+    }
 
     const SerializedData value() const
     {
         return SerializedData(dynamicData, dynamicSize);
+    }
+
+    SD toSD() const
+    {
+        SerializedData *data = new SerializedData(dynamicData, dynamicSize);
+        return SD(data);
     }
 
     template< typename Field > typename Field::T field() const

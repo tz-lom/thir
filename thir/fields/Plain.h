@@ -19,6 +19,10 @@ public:
         return to_native(*(reinterpret_cast<const type*>(staticData)));
     }
 
+    void set(const type value) {
+        *(reinterpret_cast<type*>(const_cast<char*>(staticData))) = from_native(value);
+    }
+
 
     template <typename Field, typename Next>
     class Setter

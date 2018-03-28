@@ -1,6 +1,8 @@
 #include <vector>
 #include <stdint.h>
 #include <cstddef>
+#include <boost/endian/conversion.hpp>
+
 
 #if __cplusplus < 201103L
 #  include <boost/shared_ptr.hpp>
@@ -92,7 +94,7 @@ public:
 
     SerializedData(size_t allocate);
     SerializedData(reader readdata, void* opt = nullptr);
-    SerializedData(const char* block, size_t size);
+    SerializedData(const char* block, size_t size, bool copy = false);
 
     inline const char* data() const {
       if (block == nullptr) {
