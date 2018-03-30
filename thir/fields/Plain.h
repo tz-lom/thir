@@ -1,3 +1,7 @@
+#define THIR_EXTENSION_CLASS Plain
+#define THIR_EXTENSION_TYPE Include
+#include "../extensions.h"
+
 THIR_NAMESPACE_OPEN
 
 template <typename type>
@@ -23,6 +27,9 @@ public:
         *(reinterpret_cast<type*>(const_cast<char*>(staticData))) = from_native(value);
     }
 
+#define THIR_EXTENSION_CLASS Plain
+#define THIR_EXTENSION_TYPE Field
+#include "../extensions.h"
 
     template <typename Field, typename Next>
     class Setter
@@ -42,6 +49,11 @@ public:
 
             return ValueSetter<typename Next::F, typename Next::N>(constructor);
         }
+
+#define THIR_EXTENSION_CLASS Plain
+#define THIR_EXTENSION_TYPE Setter
+#include "../extensions.h"
+
 
         Setter(RC constructor) :
             constructor(constructor),

@@ -1,3 +1,7 @@
+#define THIR_EXTENSION_CLASS AnyOf
+#define THIR_EXTENSION_TYPE Include
+#include "../extensions.h"
+
 THIR_NAMESPACE_OPEN
 
 template <SerializedData::rid ValidId, typename NextCheck>
@@ -24,6 +28,10 @@ public:
     AnyOf(const char* staticData, const char* dynamicData, SerializedData::hel dynamicSize):
         Any(staticData, dynamicData, dynamicSize){}
 
+#define THIR_EXTENSION_CLASS AnyOf
+#define THIR_EXTENSION_TYPE Field
+#include "../extensions.h"
+
     template <typename Field, typename Next>
     class Setter: public Any::Setter<Field, Next>
     {
@@ -46,6 +54,10 @@ public:
 
             return Any::Setter<Field, Next>::template beginRecursive<Record>();
         }
+
+#define THIR_EXTENSION_CLASS AnyOf
+#define THIR_EXTENSION_TYPE Setter
+#include "../extensions.h"
 
         Setter(RC constructor) : Any::Setter<Field, Next>(constructor) {}
     };

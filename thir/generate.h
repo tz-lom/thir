@@ -2,6 +2,9 @@
 #include <boost/preprocessor/seq.hpp>
 #include <boost/preprocessor/list.hpp>
 #include <boost/preprocessor/cat.hpp>
+#include <boost/endian/conversion.hpp>
+#include <boost/preprocessor/stringize.hpp>
+
 
 
 // Thir settings
@@ -21,6 +24,7 @@
 #  define THIR_SEND_ENDIAN little
 #  define THIR_AUTO_SEND_ENDIAN
 #endif
+
 
 
 #ifdef THIR_PRIV_ENDCONV_ENABLE
@@ -56,6 +60,7 @@
 #define ANY_OF(name, types) (( (THIR_NS::AnyOf< THIR_PRIV_GEN_ID_VALIDATOR_SEQ(types) >) )(name))
 #define VECTOR_ANY_OF(name, types) (( (THIR_NS::VectorOfAnyOf< THIR_PRIV_GEN_ID_VALIDATOR_SEQ(types) >) )(name))
 
+#define THIR_EXTENSION_INCLUDE(Ext, Class, Type) BOOST_PP_STRINGIZE(./extensions/Ext/BOOST_PP_CAT(Class,BOOST_PP_CAT(_,Type)).h)
 
 
 #define THIR_NAMESPACE_OPEN_CODE(s, data, x) namespace x {
@@ -67,9 +72,9 @@
 #define THIR_NAMESPACE_DECLARE(r, state, x) state :: x
 #define THIR_NS BOOST_PP_SEQ_FOLD_LEFT(THIR_NAMESPACE_DECLARE, ,THIR_NAMESPACE)
 
-#define EXP_I(r, data, x) BOOST_PP_COMMA() x
+#define THIR_PRIV_EXP_I(r, data, x) BOOST_PP_COMMA() x
 
-#define THIR_PRIV_OPEN_PARENS(x)  BOOST_PP_SEQ_ELEM(0,x) BOOST_PP_LIST_FOR_EACH(EXP_I, _, BOOST_PP_SEQ_TO_LIST(BOOST_PP_SEQ_TAIL(x)))
+#define THIR_PRIV_OPEN_PARENS(x)  BOOST_PP_SEQ_ELEM(0,x) BOOST_PP_LIST_FOR_EACH(THIR_PRIV_EXP_I, _, BOOST_PP_SEQ_TO_LIST(BOOST_PP_SEQ_TAIL(x)))
 
 
 #define THIR_PRIV_GEN_ID_VALIDATOR(s, data, x) THIR_NS::IDValidator< x::ID)(

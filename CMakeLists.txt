@@ -35,6 +35,7 @@ set(ProtocolFiles
     thir/fields/VectorOfAny.h
     thir/fields/VectorOfAnyOf.h
     thir/fields/Void.h
+    thir/fields/String.h
     )
 
 set(TestFiles
@@ -45,6 +46,16 @@ set(TestFiles
     test_binary_little_endian.h
     test_binary_big_endian.h
     test_parallel_definitions.h
+    )
+
+set(TestExtensionQt
+    test_ext_core.cpp
+    test_ext_qt_.h
+    structures.h
+    structures.cpp
+    thir/extensions/Qt/String_Field.h
+    thir/extensions/Qt/String_Setter.h
+    thir/extensions/Qt/String_Include.h
     )
 
 include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include ${CMAKE_CURRENT_SOURCE_DIR})
@@ -68,6 +79,21 @@ add_executable(tests_big
 target_compile_definitions(tests_big PRIVATE THIR_SEND_ENDIAN=big)
 add_test(${PROJECT_NAME} COMMAND tests_big)
 target_link_libraries(tests_big PRIVATE Threads::Threads)
+
+add_executable(test_extension_qt
+    ${TestExtensionQt}
+    ${ProtocolFiles}
+    ${GTestSrc}/src/gtest-all.cc
+    ${GMockSrc}/src/gmock-all.cc
+    )
+find_package( Qt5Core )
+set(CMAKE_CXX_STANDARD 14)
+qt5_use_modules(test_extension_qt Core)
+
+target_compile_definitions(test_extension_qt PRIVATE THIR_TEST_EXTENSION=qt)
+add_test(${PROJECT_NAME} COMMAND test_extension_qt)
+target_link_libraries(tests_little PRIVATE Threads::Threads)
+
 
 #set(CMAKE_CXX_STANDARD 11)
 #add_executable(speedTest speedtest.cpp structures.cpp)

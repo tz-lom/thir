@@ -1,7 +1,6 @@
 #include <vector>
 #include <stdint.h>
 #include <cstddef>
-#include <boost/endian/conversion.hpp>
 
 
 #if __cplusplus < 201103L
@@ -227,7 +226,7 @@ protected:
 
 template <int recordId, typename self>
 struct Record {
-  enum { ID = recordId };
+  typedef enum { ID = recordId } __avoid_warning_unnamed_type_template_args;
 
   template <typename type, typename parent>
   struct Field {

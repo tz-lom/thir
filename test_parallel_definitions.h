@@ -13,7 +13,7 @@ using namespace testing;
     )
 
 #undef THIR_NAMESPACE
-#define THIR_NAMESPACE (Parallel)
+#define THIR_NAMESPACE (Parallel)(Definition)
 
 #include <thir/generate.h>
 #include <thir/classes.h>
@@ -29,7 +29,7 @@ THIR_GENERATE_IMPLEMENTATION(SECOND_DEFINITION)
 TEST(Paralel, BothDefinitions)
 {
     Thir::SD data_a = One::create().set(42).finish();
-    Parallel::SD data_b = Foo::create().set(-112).finish();
+    Parallel::Definition::SD data_b = Foo::create().set(-112).finish();
 
     ASSERT_EQ(data_a->field<One::a>().value(), 42);
     ASSERT_EQ(data_b->field<Foo::a>().value(), -112);

@@ -1,3 +1,8 @@
+#define THIR_EXTENSION_CLASS Vector
+#define THIR_EXTENSION_TYPE Include
+#include "../extensions.h"
+
+
 THIR_NAMESPACE_OPEN
 
 template <typename type>
@@ -34,6 +39,9 @@ public:
         return to_native(reinterpret_cast<const type*>(dynamicData)[index]);
     }
 
+#define THIR_EXTENSION_CLASS Vector
+#define THIR_EXTENSION_TYPE Field
+#include "../extensions.h"
 
     template <typename Field, typename Next>
     class Setter
@@ -87,6 +95,10 @@ public:
             *reinterpret_cast<type*>(constructor->dynamicData(sizeof(type), fuse)) = from_native(value);
             return *static_cast<ValueSetter<Field, Next>*>(this);
         }
+
+#define THIR_EXTENSION_CLASS Vector
+#define THIR_EXTENSION_TYPE Setter
+#include "../extensions.h"
 
         Setter(RC constructor) : constructor(constructor), fuse(constructor->fuse()) {}
 

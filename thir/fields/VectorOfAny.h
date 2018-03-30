@@ -1,3 +1,7 @@
+#define THIR_EXTENSION_CLASS VectorOfAny
+#define THIR_EXTENSION_TYPE Include
+#include "../extensions.h"
+
 THIR_NAMESPACE_OPEN
 
 class VectorOfAny: public FieldType {
@@ -94,6 +98,10 @@ public:
         return result;
     }
 
+#define THIR_EXTENSION_CLASS VectorOfAny
+#define THIR_EXTENSION_TYPE Field
+#include "../extensions.h"
+
     template <typename Field, typename Next>
     class Setter
     {
@@ -116,6 +124,10 @@ public:
                 );
             return typename Record::recursive(constructor);
         }
+
+#define THIR_EXTENSION_CLASS VectorOfAny
+#define THIR_EXTENSION_TYPE Setter
+#include "../extensions.h"
 
         Setter(RC constructor) : constructor(constructor), fuse(constructor->fuse()) {}
 

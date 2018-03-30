@@ -121,6 +121,14 @@ TEST(Creation, VectorOfAny)
     ASSERT_EQ(data->field<Six::a>().get(1).field<Two::b>().value(), 12);
 }
 
+TEST(Creation, String)
+{
+    std::string str = "Foo bar baz";
+    SD data = Eleven::create().set(str).finish();
+
+    ASSERT_EQ(data->field<Eleven::a>().value(), str);
+}
+
 
 TEST(IncorrectCreation, DoubleInitializationField)
 {

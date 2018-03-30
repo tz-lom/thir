@@ -8,6 +8,7 @@ before_install:
   - sudo add-apt-repository ppa:kzemek/boost -y
   - sudo apt-get update -q
   - sudo apt-get install libboost1.58-dev -y
+  - sudo apt-get install qtbase5-dev -y
 
 script: 
-  - mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . && ./tests_big && ./tests_little
+  - mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . && ./tests_big && ./tests_little && ./test_extension_qt

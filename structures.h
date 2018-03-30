@@ -50,8 +50,8 @@ typedef int8_t   i8;
     RECORD(Ten, \
         EMPTY()\
     )\
-    RECORD(String,\
-        STRING(str)\
+    RECORD(Eleven,\
+        STRING(a)\
     )\
     RECORD(Rec,\
         VECTOR(ids, i64)\

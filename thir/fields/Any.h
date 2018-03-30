@@ -1,3 +1,7 @@
+#define THIR_EXTENSION_CLASS Any
+#define THIR_EXTENSION_TYPE Include
+#include "../extensions.h"
+
 THIR_NAMESPACE_OPEN
 
 class Any: public FieldType {
@@ -30,6 +34,10 @@ public:
         return SerializedData(dynamicData, dynamicSize).field<Field>();
     }
 
+#define THIR_EXTENSION_CLASS Any
+#define THIR_EXTENSION_TYPE Field
+#include "../extensions.h"
+
     template <typename Field, typename Next>
     class Setter
     {
@@ -60,6 +68,10 @@ public:
 
             return ValueSetter<typename Next::F, typename Next::N>(constructor);            
         }
+
+#define THIR_EXTENSION_CLASS Any
+#define THIR_EXTENSION_TYPE Setter
+#include "../extensions.h"
 
         Setter(RC constructor) :
             constructor(constructor),
