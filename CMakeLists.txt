@@ -3,7 +3,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 set(CMAKE_CXX_STANDARD 98)
 
 
-PROJECT(simpleProtocol
+PROJECT(thir
         LANGUAGES CXX)
 
 find_package(Threads REQUIRED)
@@ -92,7 +92,7 @@ qt5_use_modules(test_extension_qt Core)
 
 target_compile_definitions(test_extension_qt PRIVATE THIR_TEST_EXTENSION=qt)
 add_test(${PROJECT_NAME} COMMAND test_extension_qt)
-target_link_libraries(tests_little PRIVATE Threads::Threads)
+target_link_libraries(test_extension_qt Threads::Threads)
 
 
 #set(CMAKE_CXX_STANDARD 11)
