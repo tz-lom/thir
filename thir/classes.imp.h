@@ -130,7 +130,10 @@ void RecordConstructor::beginNested(SerializedData::rid id,
 
     SerializedData::hel* dyn =
       reinterpret_cast<SerializedData::hel*>(obj + sizeof(SerializedData::rid));
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmemset-transposed-args"
     memset(dyn, headerSize, 0);
+#pragma GCC diagnostic pop
 
     size_t hOffset = sizeof(id) + static_cast<size_t>(obj - data->data());
     size_t sOffset = hOffset + headerSize * sizeof(SerializedData::hel);
