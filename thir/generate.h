@@ -60,7 +60,7 @@
 #define ANY_OF(name, types) (( (THIR_NS::AnyOf< THIR_PRIV_GEN_ID_VALIDATOR_SEQ(types) >) )(name))
 #define VECTOR_ANY_OF(name, types) (( (THIR_NS::VectorOfAnyOf< THIR_PRIV_GEN_ID_VALIDATOR_SEQ(types) >) )(name))
 
-#define THIR_EXTENSION_INCLUDE(Ext, Class, Type) BOOST_PP_STRINGIZE(./extensions/Ext/BOOST_PP_CAT(Class,BOOST_PP_CAT(_,Type)).h)
+#define THIR_EXTENSION_INCLUDE(Ext, Class, Type) BOOST_PP_STRINGIZE(BOOST_PP_CAT(./extensions/, BOOST_PP_CAT(Ext, BOOST_PP_CAT(/, BOOST_PP_CAT(Class,BOOST_PP_CAT(_,Type)).h))))
 
 
 #define THIR_NAMESPACE_OPEN_CODE(s, data, x) namespace x {
