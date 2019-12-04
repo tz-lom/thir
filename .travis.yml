@@ -7,7 +7,7 @@ compiler:
 addons:
   apt:
     packages:
-      - libboost-latest-dev
+      - libboost-dev
       - qtbase5-dev
 
 script: 
