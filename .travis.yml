@@ -12,6 +12,7 @@ addons:
     packages:
       - libboost-dev
       - qtbase5-dev
+      - libgtest-dev
 
 script: 
   - mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && cmake --build . && ./tests_big && ./tests_little && ./test_extension_qt
