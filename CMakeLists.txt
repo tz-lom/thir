@@ -58,7 +58,20 @@ set(TestExtensionQt
     thir/extensions/Qt/String_Include.h
     )
 
-include_directories(${GTestSrc} ${GTestSrc}/include ${GMockSrc} ${GMockSrc}/include ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(
+    ${GTestSrc}
+    ${GTestSrc}/include
+    ${GMockSrc}
+    ${GMockSrc}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    boost/preprocessor/include
+    boost/endian/include
+    boost/config/include
+    boost/predef/include
+    boost/core/include
+    boost/static_assert/include
+    boost/type_traits/include
+    )
 
 add_executable(tests_little
     ${TestFiles}
