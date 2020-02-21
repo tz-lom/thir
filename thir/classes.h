@@ -57,6 +57,18 @@ inline float from_native(float x)
     return x;
 }
 
+template<>
+inline bool to_native(bool x)
+{
+    return x;
+}
+
+template<>
+inline bool from_native(bool x)
+{
+    return x;
+}
+
 
 struct First {
     enum {
