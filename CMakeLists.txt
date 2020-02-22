@@ -1,25 +1,13 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
-
 set(CMAKE_CXX_STANDARD 98)
+PROJECT(thir LANGUAGES CXX)
 
-
-PROJECT(thir
-        LANGUAGES CXX)
+include(conanbuildinfo.cmake)
+conan_basic_setup()
 
 find_package(Threads REQUIRED)
-
-if ($ENV{GOOGLETEST_DIR})
-    SET(GOOGLETEST_DIR $ENV{GOOGLETEST_DIR})
-else ()
-    message(WARNING "Using googletest src dir specified at Qt Creator wizard")
-    SET(GOOGLETEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/googletest)
-endif ()
-if (EXISTS ${GOOGLETEST_DIR})
-    SET(GTestSrc ${GOOGLETEST_DIR}/googletest)
-    SET(GMockSrc ${GOOGLETEST_DIR}/googlemock)
-else ()
-    message( FATAL_ERROR "No googletest src dir found - set GOOGLETEST_DIR to enable!")
-endif ()
+find_package(gtest REQUIRED)
+find_package(boost REQUIRED)
 
 set(ProtocolFiles
     thir/generate.h
@@ -59,10 +47,8 @@ set(TestExtensionQt
     )
 
 include_directories(
-    ${GTestSrc}
-    ${GTestSrc}/include
-    ${GMockSrc}
-    ${GMockSrc}/include
+    GTEST_INCLUDE_DIRS
+	BOOST_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}
     boost/preprocessor/include
     boost/endian/include
@@ -76,28 +62,23 @@ include_directories(
 add_executable(tests_little
     ${TestFiles}
     ${ProtocolFiles}
-    ${GTestSrc}/src/gtest-all.cc
-    ${GMockSrc}/src/gmock-all.cc
     )
 target_compile_definitions(tests_little PRIVATE THIR_SEND_ENDIAN=little)
 add_test(${PROJECT_NAME} COMMAND tests_little)
-target_link_libraries(tests_little PRIVATE Threads::Threads)
+target_link_libraries(tests_little PRIVATE Threads::Threads ${GTEST_BOTH_LIBRARIES})
 
 add_executable(tests_big
     ${TestFiles}
     ${ProtocolFiles}
-    ${GTestSrc}/src/gtest-all.cc
-    ${GMockSrc}/src/gmock-all.cc
     )
 target_compile_definitions(tests_big PRIVATE THIR_SEND_ENDIAN=big)
 add_test(${PROJECT_NAME} COMMAND tests_big)
-target_link_libraries(tests_big PRIVATE Threads::Threads)
+target_link_libraries(tests_big PRIVATE Threads::Threads ${GTEST_BOTH_LIBRARIES})
+
 
 add_executable(test_extension_qt
     ${TestExtensionQt}
     ${ProtocolFiles}
-    ${GTestSrc}/src/gtest-all.cc
-    ${GMockSrc}/src/gmock-all.cc
     )
 find_package( Qt5Core )
 set(CMAKE_CXX_STANDARD 14)
@@ -105,7 +86,7 @@ qt5_use_modules(test_extension_qt Core)
 
 target_compile_definitions(test_extension_qt PRIVATE THIR_TEST_EXTENSION=qt)
 add_test(${PROJECT_NAME} COMMAND test_extension_qt)
-target_link_libraries(test_extension_qt Threads::Threads)
+target_link_libraries(test_extension_qt Threads::Threads ${GTEST_BOTH_LIBRARIES})
 
 
 #set(CMAKE_CXX_STANDARD 11)

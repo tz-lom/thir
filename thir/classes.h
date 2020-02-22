@@ -21,50 +21,50 @@ using namespace ::boost::endian;
 
 
 template <class EndianReversible >
-inline EndianReversible  to_native(EndianReversible  x)
+inline EndianReversible  to_native(EndianReversible  x) noexcept
 {
     return BOOST_PP_CAT(THIR_SEND_ENDIAN, _to_native)(x);
 }
 
 template <class EndianReversible >
-inline EndianReversible  from_native(EndianReversible  x)
+inline EndianReversible  from_native(EndianReversible  x) noexcept
 {
     return BOOST_PP_CAT(native_to_, THIR_SEND_ENDIAN)(x);
 }
 
 template<>
-inline double to_native(double x)
+inline double to_native(double x) noexcept
 {
     return x;
 }
 
 template<>
-inline float to_native(float x)
+inline float to_native(float x) noexcept
 {
     return x;
 }
 
 
 template<>
-inline double from_native(double x)
+inline double from_native(double x) noexcept
 {
     return x;
 }
 
 template<>
-inline float from_native(float x)
+inline float from_native(float x) noexcept
 {
     return x;
 }
 
 template<>
-inline bool to_native(bool x)
+inline bool to_native(bool x) noexcept
 {
     return x;
 }
 
 template<>
-inline bool from_native(bool x)
+inline bool from_native(bool x) noexcept
 {
     return x;
 }
@@ -90,13 +90,13 @@ struct WrongIndex : SerializedException {};
 struct SecondInitialization : SerializedException {};
 struct WrongCreationOrder: SerializedException {};
 
+class RecordConstructor;
 
 /////////////////////////////////////////////////////////////////////
 /// \brief The SerializedData class
 ///
 class SerializedData
 {
-    friend class RecordConstructor;
 public:
     typedef THIR_ID_TYPE rid;
     typedef THIR_DYNAMIC_SIZE_TYPE hel;
@@ -172,7 +172,9 @@ public:
         return staticSizes[id];
     }
 
-protected:
+private:
+    friend class RecordConstructor;
+
     char* block;
     size_t allocated;
     std::vector<char> vec;
@@ -181,14 +183,13 @@ protected:
     static const size_t staticSizes[];
     static const size_t __LastType;
 
-    inline void requireSize(size_t size) {
+    void requireSize(size_t size) {
         if (block) throw SerializedException();
         vec.resize(size);
         allocated = size;
     }
 };
 
-class RecordConstructor;
 #if __cplusplus < 201103L
 typedef ::boost::shared_ptr<RecordConstructor> RC;
 typedef ::boost::shared_ptr<SerializedData> SD;
@@ -222,7 +223,7 @@ public:
                    const Fuse &fuse);
     SD finishNested(const Fuse &fuse);
 
-protected:
+public:
     SD data;
     size_t dynamicOffset;
     std::vector<size_t> staticOffset;
