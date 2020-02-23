@@ -1,0 +1,21 @@
+name: C/C++ CI
+
+on: [push]
+
+jobs:
+  build:
+    
+    strategy:
+      matrix:
+        os: ['ubuntu-latest', 'windows-2016', 'windows-2019', 'macOS-latest']
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v2
+    - uses: grisumbras/conan-actions/install@master
+    - name: Build and test
+      uses: nicledomaS/cmake_build_action@v1
+      with:
+        run_tests: ON
+    
