@@ -14,9 +14,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: install conan
-      run: pip install conan
-    - name: get conan packages
-      run: conan install .
+      run: pip install conan && conan install .
     - name: Build and test
       uses: nicledomaS/cmake_build_action@v1
       with:
