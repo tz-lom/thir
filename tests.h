@@ -255,3 +255,23 @@ TEST(Creation, VectorSet)
     ASSERT_EQ( (::std::vector<i16>)data->field<Three::b>(), source);
 }
 
+TEST(Regression, R01)
+{
+    R01_S01::recursive::N::N a = R01_S01::create()
+            .set("out")
+            .set("{cbe9fb26-cec2-43c9-81b2-dc41baddb5d8}");
+    a.beginRecursive<R01_S02>()
+            .set(3)
+            .set(500)
+            .finish();
+    SD data = a.next().finish();
+    
+    ASSERT_EQ(data->size(), 69);
+    ASSERT_EQ(data->field<R01_S01::type>().value().size(), 2+4+8);
+    
+    ASSERT_EQ(data->field<R01_S01::name>().value(), std::string("out"));
+    ASSERT_EQ(data->field<R01_S01::uid>().value(), std::string("{cbe9fb26-cec2-43c9-81b2-dc41baddb5d8}"));
+    ASSERT_EQ(data->field<R01_S01::type>().field<R01_S02::channels>().value(), 3);
+    ASSERT_EQ(data->field<R01_S01::type>().field<R01_S02::samplingRate>().value(), 500);
+}
+

@@ -21,50 +21,50 @@ using namespace ::boost::endian;
 
 
 template <class EndianReversible >
-inline EndianReversible  to_native(EndianReversible  x) noexcept
+inline EndianReversible  to_native(EndianReversible  x) THIR_NOEXCEPT
 {
     return BOOST_PP_CAT(THIR_SEND_ENDIAN, _to_native)(x);
 }
 
 template <class EndianReversible >
-inline EndianReversible  from_native(EndianReversible  x) noexcept
+inline EndianReversible  from_native(EndianReversible  x) THIR_NOEXCEPT
 {
     return BOOST_PP_CAT(native_to_, THIR_SEND_ENDIAN)(x);
 }
 
 template<>
-inline double to_native(double x) noexcept
+inline double to_native(double x) THIR_NOEXCEPT
 {
     return x;
 }
 
 template<>
-inline float to_native(float x) noexcept
+inline float to_native(float x) THIR_NOEXCEPT
 {
     return x;
 }
 
 
 template<>
-inline double from_native(double x) noexcept
+inline double from_native(double x) THIR_NOEXCEPT
 {
     return x;
 }
 
 template<>
-inline float from_native(float x) noexcept
+inline float from_native(float x) THIR_NOEXCEPT
 {
     return x;
 }
 
 template<>
-inline bool to_native(bool x) noexcept
+inline bool to_native(bool x) THIR_NOEXCEPT
 {
     return x;
 }
 
 template<>
-inline bool from_native(bool x) noexcept
+inline bool from_native(bool x) THIR_NOEXCEPT
 {
     return x;
 }

@@ -6,8 +6,8 @@ include(conanbuildinfo.cmake)
 conan_basic_setup()
 
 find_package(Threads REQUIRED)
-find_package(gtest REQUIRED)
-find_package(boost REQUIRED)
+find_package(GTest REQUIRED)
+find_package(Boost REQUIRED)
 
 set(ProtocolFiles
     thir/generate.h

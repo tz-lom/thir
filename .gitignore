@@ -74,3 +74,9 @@ Thumbs.db
 CMakeLists.txt.user
 structures.expanded.h
 build
+conan.lock
+conanbuildinfo.cmake
+conanbuildinfo.txt
+conaninfo.txt
+graph_info.json
+
