@@ -6,16 +6,38 @@ jobs:
   build:
     
     strategy:
+      fail-fast: false
       matrix:
-        os: ['windows-2016', 'windows-2019', 'macOS-latest']
+        config:
+          - os: windows-2016
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2016/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          - os: windows-2019
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          - os: macOS-latest
+          - os: ubuntu-latest
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.config.os }}
     
     steps:
     - uses: actions/checkout@v2
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       if: runner.os != 'Windows'
+    - name: Configure
+      shell: cmake -P {0}
+      run: |
+        if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
+          execute_process(
+            COMMAND "${{ matrix.config.environment_script }}" && set
+            OUTPUT_FILE environment_script_output.txt
+          )
+          file(STRINGS environment_script_output.txt output_lines)
+          foreach(line IN LISTS output_lines)
+            if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
+              set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+            endif()
+          endforeach()
+        endif()
     - name: install conan
       run: |
         pip install conan
