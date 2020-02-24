@@ -21,8 +21,9 @@ jobs:
         pip install conan
         conan install .
     - name: Build and test
-      uses: nicledomaS/cmake_build_action@v1
+      uses: lukka/run-cmake@v0.10
       with:
-        run_tests: ON
-        cmake_args: -DDISABLE_QT_TEST:bool=${{ runner.os == 'Windows' }}
+        cmakeBuildType: Release
+        cmakeAppendedArgs: -DDISABLE_QT_TEST:bool=${{ runner.os == 'Windows' }}
+        buildWithCMakeArgs: --target test
     
