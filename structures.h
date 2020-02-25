@@ -56,6 +56,15 @@ typedef int8_t   i8;
     RECORD(Rec,\
         VECTOR(ids, i64)\
         VECTOR_ANY(strings)\
+    )\
+    RECORD(R01_S01,\
+        STRING(name) \
+        STRING(uid) \
+        ANY(type) \
+    )\
+    RECORD(R01_S02,\
+        FIELD(channels, uint32_t) \
+        FIELD(samplingRate, double) \
     )
 
 THIR_GENERATE_HEADER(MAIN_DEFINITION)

@@ -7,6 +7,9 @@ using namespace testing;
 
 using namespace Thir;
 
+#define ASSERT_BINARY(what, binary)\
+    ASSERT_EQ(what, std::vector<char>(&binary[0], &binary[sizeof(binary)-1]))
+
 TEST(Binary, Simple)
 {
     const char binary[] =
@@ -14,8 +17,8 @@ TEST(Binary, Simple)
             "\x00\x00\x00\x2A";
 
     SD data = One::create().set(42).finish();
-    ASSERT_EQ(data->vector(),
-              std::vector<char>(&binary[0], &binary[sizeof(binary)-1]));
+    
+    ASSERT_BINARY(data->vector(), binary);
 }
 
 TEST(Binary, AnyOf)
@@ -31,8 +34,7 @@ TEST(Binary, AnyOf)
     a.beginRecursive<Three>().set(3).finish().finish();
     SD data = a.next().finish();
 
-    ASSERT_EQ(data->vector(),
-              std::vector<char>(&binary[0], &binary[sizeof(binary)-1]));
+    ASSERT_BINARY(data->vector(), binary);
 }
 
 TEST(Binary, Empty)
@@ -43,6 +45,11 @@ TEST(Binary, Empty)
 
     SD data = Ten::create().next().finish();
 
-    ASSERT_EQ(data->vector(),
-              std::vector<char>(&binary[0], &binary[sizeof(binary)-1]));
+    ASSERT_BINARY(data->vector(), binary);
 }
+
+TEST(Binary, R01)
+{
+    
+}
+

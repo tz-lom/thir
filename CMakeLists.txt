@@ -1,13 +1,14 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.1)
 set(CMAKE_CXX_STANDARD 98)
 PROJECT(thir LANGUAGES CXX)
+enable_testing()
 
 include(conanbuildinfo.cmake)
 conan_basic_setup()
 
 find_package(Threads REQUIRED)
-find_package(gtest REQUIRED)
-find_package(boost REQUIRED)
+find_package(GTest REQUIRED)
+find_package(Boost REQUIRED)
 
 set(ProtocolFiles
     thir/generate.h
@@ -64,7 +65,7 @@ add_executable(tests_little
     ${ProtocolFiles}
     )
 target_compile_definitions(tests_little PRIVATE THIR_SEND_ENDIAN=little)
-add_test(${PROJECT_NAME} COMMAND tests_little)
+add_test(NAME LittleEndian COMMAND tests_little)
 target_link_libraries(tests_little PRIVATE Threads::Threads ${GTEST_BOTH_LIBRARIES})
 
 add_executable(tests_big
@@ -72,25 +73,25 @@ add_executable(tests_big
     ${ProtocolFiles}
     )
 target_compile_definitions(tests_big PRIVATE THIR_SEND_ENDIAN=big)
-add_test(${PROJECT_NAME} COMMAND tests_big)
+add_test(NAME BigEndian COMMAND tests_big)
 target_link_libraries(tests_big PRIVATE Threads::Threads ${GTEST_BOTH_LIBRARIES})
 
+if(NOT DISABLE_QT_TESTS)
+    
+    add_executable(test_extension_qt
+        ${TestExtensionQt}
+        ${ProtocolFiles}
+        )
+    find_package( Qt5Core )
+    set(CMAKE_CXX_STANDARD 14)
+    qt5_use_modules(test_extension_qt Core)
+    
+    target_compile_definitions(test_extension_qt PRIVATE THIR_TEST_EXTENSION=qt)
+    add_test(NAME ExtensionQt COMMAND test_extension_qt)
+    target_link_libraries(test_extension_qt Threads::Threads ${GTEST_BOTH_LIBRARIES})
 
-add_executable(test_extension_qt
-    ${TestExtensionQt}
-    ${ProtocolFiles}
-    )
-find_package( Qt5Core )
-set(CMAKE_CXX_STANDARD 14)
-qt5_use_modules(test_extension_qt Core)
+endif(NOT DISABLE_QT_TESTS)
 
-target_compile_definitions(test_extension_qt PRIVATE THIR_TEST_EXTENSION=qt)
-add_test(${PROJECT_NAME} COMMAND test_extension_qt)
-target_link_libraries(test_extension_qt Threads::Threads ${GTEST_BOTH_LIBRARIES})
-
-
-#set(CMAKE_CXX_STANDARD 11)
-#add_executable(speedTest speedtest.cpp structures.cpp)
 
 
 
