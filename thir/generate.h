@@ -182,7 +182,7 @@ Name::recursive Name::create()\
 
 #define THIR_PRIV_GEN_CLASS_CPP_I(Records) \
     BOOST_PP_SEQ_FOR_EACH_I(THIR_PRIV_GEN_CONSTRUCTORS,_,Records)\
-    const size_t (THIR_NS::SerializedData::headerSizes[]) = {0 BOOST_PP_SEQ_FOR_EACH_I(THIR_PRIV_GEN_STATIC_HEADER_SIZE,_,Records) };\
-    const size_t (THIR_NS::SerializedData::staticSizes[]) = {0 BOOST_PP_SEQ_FOR_EACH_I(THIR_PRIV_GEN_STATIC_STATIC_SIZE,_,Records) };\
-    const size_t (THIR_NS::SerializedData::__LastType) = BOOST_PP_SEQ_FOLD_LEFT( THIR_PRIV_GEN_STATIC_LAST_ID , 0, Records)::ID ;
+    const size_t THIR_NS::SerializedData::headerSizes[] = {0 BOOST_PP_SEQ_FOR_EACH_I(THIR_PRIV_GEN_STATIC_HEADER_SIZE,_,Records) };\
+    const size_t THIR_NS::SerializedData::staticSizes[] = {0 BOOST_PP_SEQ_FOR_EACH_I(THIR_PRIV_GEN_STATIC_STATIC_SIZE,_,Records) };\
+    const size_t THIR_NS::SerializedData::__LastType = BOOST_PP_SEQ_FOLD_LEFT( THIR_PRIV_GEN_STATIC_LAST_ID , 0, Records)::ID ;
 
