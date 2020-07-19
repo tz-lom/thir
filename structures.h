@@ -2,9 +2,9 @@
 #define TESTS_MAIN_STRUCTURES
 
 
-#include <thir/generate.h>
-#include <thir/classes.h>
-#include <thir/fields/all.h>
+#include <thir/generate.hpp>
+#include <thir/classes.hpp>
+#include <thir/fields/all.hpp>
 
 typedef uint64_t u64;
 typedef uint32_t u32;
@@ -60,6 +60,6 @@ typedef int8_t   i8;
 
 THIR_GENERATE_HEADER(MAIN_DEFINITION)
 
-#include <thir/undef.h>
+#include <thir/undef.hpp>
 
 #endif
