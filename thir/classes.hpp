@@ -1,9 +1,7 @@
 #include <vector>
-#include <stdint.h>
 #include <cstddef>
 
-
-#if __cplusplus < 201103L
+#if THIR_IS_CPP11 == 0
 #  include <boost/shared_ptr.hpp>
 #else
 #  include <memory>
@@ -12,12 +10,6 @@
 THIR_NAMESPACE_OPEN
 
 using namespace ::boost::endian;
-
-#if __cplusplus < 201103L
-#  ifndef nullptr
-#    define nullptr (0)
-#  endif
-#endif
 
 
 template <class EndianReversible >
@@ -104,11 +96,11 @@ public:
     typedef void (*reader)(char* memory, ::std::size_t size, void* opt);
 
     SerializedData(::std::size_t allocate);
-    SerializedData(reader readdata, void* opt = nullptr);
+    SerializedData(reader readdata, void* opt = THIR_NULLPTR);
     SerializedData(const char* block, ::std::size_t size, bool copy = false);
 
     inline const char* data() const {
-      if (block == nullptr) {
+      if (block == THIR_NULLPTR) {
         return &vec[0];
       } else {
         return block;
@@ -116,7 +108,7 @@ public:
     }
 
     inline char* data() {
-      if (block == nullptr) {
+      if (block == THIR_NULLPTR) {
         return &vec[0];
       } else {
         return block;
@@ -124,7 +116,7 @@ public:
     }
 
     inline std::vector<char> vector() {
-        if(block == nullptr) {
+        if(block == THIR_NULLPTR) {
             return vec;
         } else {
             return std::vector<char>(block, block+allocated);
@@ -190,7 +182,7 @@ private:
     }
 };
 
-#if __cplusplus < 201103L
+#if THIR_IS_CPP11 == 0
 typedef ::boost::shared_ptr<RecordConstructor> RC;
 typedef ::boost::shared_ptr<SerializedData> SD;
 #else

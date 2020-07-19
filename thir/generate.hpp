@@ -5,7 +5,24 @@
 #include <boost/endian/conversion.hpp>
 #include <boost/preprocessor/stringize.hpp>
 
-
+#ifdef _MSVC_LANG
+#  if _MSVC_LANG < 201103L
+#    define THIR_IS_CPP11 0
+#  else
+#    define THIR_IS_CPP11 1
+#  endif
+#else
+#  if __cplusplus < 201103L
+#    define THIR_IS_CPP11 0
+#  else
+#    define THIR_IS_CPP11 1
+#  endif
+#endif
+#if THIR_IS_CPP11 == 0
+#  define THIR_NULLPTR ((void*)0)
+#else
+#  define THIR_NULLPTR nullptr
+#endif
 
 // Thir settings
 #ifndef THIR_DYNAMIC_SIZE_TYPE
