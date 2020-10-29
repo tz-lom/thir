@@ -62,6 +62,7 @@ public:
         
         ValueSetter<typename Next::F, typename Next::N> set(SD serialized)
         {
+            assert(serialized);
             char *data = constructor->dynamicData(serialized->size(), fuse);
             memcpy(data, serialized->data(), serialized->size());
             constructor->nextDynamic(fuse);
