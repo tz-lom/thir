@@ -1,6 +1,7 @@
 #define THIR_EXTENSION_CLASS Any
 #define THIR_EXTENSION_TYPE Include
 #include "../extensions.hpp"
+#include <assert.h>
 
 THIR_NAMESPACE_OPEN
 
